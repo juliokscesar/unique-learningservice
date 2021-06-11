@@ -8,7 +8,9 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.com/juliokscesar/unique-learningservice/unique-server/controller"
 	"github.com/juliokscesar/unique-learningservice/unique-server/models"
+	"github.com/juliokscesar/unique-learningservice/unique-server/utils"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
@@ -18,17 +20,26 @@ func hello(w http.ResponseWriter, r *http.Request) {
 func main() {
 	router := mux.NewRouter()
 
+	err := controller.ControllerInit()
+	if err != nil {
+		log.Fatal("Controller initalizing errror:", err)
+	}
+
 	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/api/", http.StatusFound)
 	})
 
 	router.HandleFunc("/api/", hello).Methods(http.MethodGet)
 
-	// TESTS
+	/* TEST ROUTERS */
 
 	u, err := models.NewUser("Julio", "emailtest@gmail.com", "12345")
 	if err != nil {
 		log.Fatal("User error:", err)
+	}
+	err = controller.InsertOneUser(u)
+	if err != nil {
+		log.Fatal("Inserting user error:", err)
 	}
 
 	c := models.NewCourse("CS50x", "Computer Science course from Harvard CS50")
@@ -41,21 +52,43 @@ func main() {
 	a := models.NewAssignment("Problem Set Test", "New problem set testing", c.ID, time.Now().AddDate(0, 2, 0), false)
 
 	router.HandleFunc("/api/test/user", func(w http.ResponseWriter, r *http.Request) {
+		utils.LogRequest(r)
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(u)
 	}).Methods(http.MethodGet)
 
+	router.HandleFunc("/api/test/user/id", func(w http.ResponseWriter, r *http.Request) {
+		utils.LogRequest(r)
+
+		foundUser, err := controller.GetUserFromID(u.ID.Hex())
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(foundUser)
+	})
+
 	router.HandleFunc("/api/test/course", func(w http.ResponseWriter, r *http.Request) {
+		utils.LogRequest(r)
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(c)
 	}).Methods(http.MethodGet)
 
 	router.HandleFunc("/api/test/material", func(w http.ResponseWriter, r *http.Request) {
+		utils.LogRequest(r)
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(m)
 	}).Methods(http.MethodGet)
 
 	router.HandleFunc("/api/test/assignment", func(w http.ResponseWriter, r *http.Request) {
+		utils.LogRequest(r)
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(a)
 	}).Methods(http.MethodGet)

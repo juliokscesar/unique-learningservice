@@ -16,7 +16,7 @@ type Course struct {
 	Description string `bson:"description" json:"description"`
 
 	Teachers []primitive.ObjectID `bson:"teachers_id" json:"teachers_id"`
-	Students []primitive.ObjectID `bson:"students_id" bson:"students_id"`
+	Students []primitive.ObjectID `bson:"students_id" json:"students_id"`
 }
 
 func NewCourse(name, description string) *Course {
