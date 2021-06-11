@@ -43,6 +43,10 @@ func NewUser(name, email, password string) (*User, error) {
 	return u, nil
 }
 
+func (u *User) AppendCourses(ids ...primitive.ObjectID) {
+	u.Courses = append(u.Courses, ids...)
+}
+
 func (u *User) UpdateName(name string) {
 	updateName(u, name)
 }
@@ -55,14 +59,22 @@ func (u *User) UpdatePassword(newPassword string) error {
 	return updatePassword(u, newPassword)
 }
 
+func (u *User) CheckPassword(password string) bool {
+	return checkPassword(u, password)
+}
+
+func (u *User) updateDate() {
+	u.UpdatedAt = time.Now()
+}
+
 func updateName(u *User, name string) {
 	u.Name = name
-	updateDate(u)
+	u.updateDate()
 }
 
 func updateEmail(u *User, email string) {
 	u.Email = email
-	updateDate(u)
+	u.updateDate()
 }
 
 func updatePassword(u *User, newPassword string) error {
@@ -73,10 +85,10 @@ func updatePassword(u *User, newPassword string) error {
 
 	u.PasswordHash = string(newHash)
 
-	updateDate(u)
+	u.updateDate()
 	return nil
 }
 
-func updateDate(u *User) {
-	u.UpdatedAt = time.Now()
+func checkPassword(u *User, password string) bool {
+	return (bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(password)) == nil)
 }
