@@ -1,10 +1,16 @@
 package controller
 
 import (
+	"errors"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/juliokscesar/unique-learningservice/unique-server/models"
+)
+
+var (
+	ERR_EMAIL_REGISTERED = errors.New("Email is already registered")
 )
 
 func GetUserFromID(id string) (*models.User, error) {
@@ -12,11 +18,7 @@ func GetUserFromID(id string) (*models.User, error) {
 		return nil, ERR_NOT_INITIALIZED
 	}
 
-	if !primitive.IsValidObjectID(id) {
-		return nil, ERR_INVALID_ID
-	}
-
-	uid, err := primitive.ObjectIDFromHex(id)
+	uid, err := ValidateConvertId(id)
 	if err != nil {
 		return nil, err
 	}
@@ -32,7 +34,32 @@ func GetUserFromID(id string) (*models.User, error) {
 	return u, nil
 }
 
-func InsertOneUser(u *models.User) error {
+func GetUserFromEmail(email string) (*models.User, error) {
+	if !IsControllerInit() {
+		return nil, ERR_NOT_INITIALIZED
+	}
+
+	filter := bson.D{primitive.E{Key: "email", Value: email}}
+
+	u := new(models.User)
+	err := usersCollection.FindOne(ctx, filter).Decode(u)
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
+}
+
+func RegisterUser(u *models.User) error {
+	_, err := GetUserFromEmail(u.Email)
+	if err == nil {
+		return ERR_EMAIL_REGISTERED
+	}
+
+	return insertOneUser(u)
+}
+
+func insertOneUser(u *models.User) error {
 	if !IsControllerInit() {
 		return ERR_NOT_INITIALIZED
 	}
@@ -52,11 +79,7 @@ func DeleteOneUser(id string) error {
 		return ERR_NOT_INITIALIZED
 	}
 
-	if !primitive.IsValidObjectID(id) {
-		return ERR_INVALID_ID
-	}
-
-	uid, err := primitive.ObjectIDFromHex(id)
+	uid, err := ValidateConvertId(id)
 	if err != nil {
 		return err
 	}
