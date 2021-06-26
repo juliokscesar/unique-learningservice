@@ -39,7 +39,7 @@ func main() {
 	}
 	err = controller.RegisterUser(u)
 	if err != nil {
-		log.Println("Inserting user error: ", err)
+		log.Println("Inserting user error:", err)
 	}
 
 	c := models.NewCourse("CS50x", "Computer Science course from Harvard CS50")

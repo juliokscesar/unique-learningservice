@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -36,6 +37,8 @@ func GetUserFromID(id string) (*models.User, error) {
 
 func GetUserFromEmail(email string) (*models.User, error) {
 	if !IsControllerInit() {
+		fmt.Println("We are in GetUserFromEmail: IsControllerInit returned false.")
+		fmt.Println("client == nil", mongoClient == nil)
 		return nil, ERR_NOT_INITIALIZED
 	}
 
@@ -61,6 +64,8 @@ func RegisterUser(u *models.User) error {
 
 func insertOneUser(u *models.User) error {
 	if !IsControllerInit() {
+		fmt.Println("we are in insertoneuser: iscontrollerinit failed")
+		fmt.Println("client == nil,", mongoClient == nil)
 		return ERR_NOT_INITIALIZED
 	}
 

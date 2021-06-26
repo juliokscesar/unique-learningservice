@@ -12,8 +12,9 @@ import (
 )
 
 var (
-	client *mongo.Client
-	ctx    context.Context = context.TODO()
+	mongoClient    *mongo.Client
+	mongoClientErr error
+	ctx            context.Context = context.TODO()
 
 	usersCollection       *mongo.Collection
 	coursesCollection     *mongo.Collection
@@ -29,28 +30,28 @@ var (
 )
 
 func IsControllerInit() bool {
-	return client != nil
+	return mongoClient != nil
 }
 
 func ControllerInit() error {
 	clientOpt := options.Client().ApplyURI(MongoURI)
 
-	client, err := mongo.Connect(ctx, clientOpt)
-	if err != nil {
-		return err
+	mongoClient, mongoClientErr = mongo.Connect(ctx, clientOpt)
+	if mongoClientErr != nil {
+		return mongoClientErr
 	}
-	log.Println("Successfully connected client (func ControllerInit)")
+	log.Println("Successfully connected client (func ControllerInit) and client == nil?", mongoClient == nil)
 
-	err = client.Ping(ctx, nil)
-	if err != nil {
-		return err
+	mongoClientErr = mongoClient.Ping(ctx, nil)
+	if mongoClientErr != nil {
+		return mongoClientErr
 	}
 	log.Println("Successfully pinged client (func ControllerInit)")
 
-	usersCollection = client.Database(Db).Collection("users")
-	coursesCollection = client.Database(Db).Collection("courses")
-	materialsCollection = client.Database(Db).Collection("materials")
-	assignmentsCollection = client.Database(Db).Collection("assignments")
+	usersCollection = mongoClient.Database(Db).Collection("users")
+	coursesCollection = mongoClient.Database(Db).Collection("courses")
+	materialsCollection = mongoClient.Database(Db).Collection("materials")
+	assignmentsCollection = mongoClient.Database(Db).Collection("assignments")
 
 	return nil
 }
