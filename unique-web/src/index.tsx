@@ -1,11 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
+import { CookiesProvider } from "react-cookie";
+import AppRouter from "./AppRouter";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <CookiesProvider>
+    <AppRouter />
+  </CookiesProvider>,
   document.getElementById("root")
 );
