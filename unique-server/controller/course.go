@@ -9,7 +9,7 @@ import (
 
 func GetCourseFromId(id string) (*models.Course, error) {
 	if !IsControllerInit() {
-		return nil, ERR_NOT_INITIALIZED
+		return nil, ErrNotInitialized
 	}
 
 	cid, err := ValidateConvertId(id)
@@ -30,7 +30,7 @@ func GetCourseFromId(id string) (*models.Course, error) {
 
 func InsertOneCourse(c *models.Course) error {
 	if !IsControllerInit() {
-		return ERR_NOT_INITIALIZED
+		return ErrNotInitialized
 	}
 
 	_, err := coursesCollection.InsertOne(ctx, c)
@@ -43,7 +43,7 @@ func InsertOneCourse(c *models.Course) error {
 
 func DeleteOneCourse(id string) error {
 	if !IsControllerInit() {
-		return ERR_NOT_INITIALIZED
+		return ErrNotInitialized
 	}
 
 	cid, err := ValidateConvertId(id)

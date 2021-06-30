@@ -11,12 +11,13 @@ import (
 )
 
 var (
-	ERR_EMAIL_REGISTERED = errors.New("Email is already registered")
+	ErrEmailRegistered = errors.New("email is already registered")
+	ErrInvalidPassword = errors.New("invalid password")
 )
 
 func GetUserFromID(id string) (*models.User, error) {
 	if !IsControllerInit() {
-		return nil, ERR_NOT_INITIALIZED
+		return nil, ErrNotInitialized
 	}
 
 	uid, err := ValidateConvertId(id)
@@ -39,7 +40,7 @@ func GetUserFromEmail(email string) (*models.User, error) {
 	if !IsControllerInit() {
 		fmt.Println("We are in GetUserFromEmail: IsControllerInit returned false.")
 		fmt.Println("client == nil", mongoClient == nil)
-		return nil, ERR_NOT_INITIALIZED
+		return nil, ErrNotInitialized
 	}
 
 	filter := bson.D{primitive.E{Key: "email", Value: email}}
@@ -53,10 +54,23 @@ func GetUserFromEmail(email string) (*models.User, error) {
 	return u, nil
 }
 
+func LoginUser(email, password string) (*models.User, error) {
+	u, err := GetUserFromEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	if !u.CheckPassword(password) {
+		return nil, ErrInvalidPassword
+	}
+
+	return u, nil
+}
+
 func RegisterUser(u *models.User) error {
 	_, err := GetUserFromEmail(u.Email)
 	if err == nil {
-		return ERR_EMAIL_REGISTERED
+		return ErrEmailRegistered
 	}
 
 	return insertOneUser(u)
@@ -66,7 +80,7 @@ func insertOneUser(u *models.User) error {
 	if !IsControllerInit() {
 		fmt.Println("we are in insertoneuser: iscontrollerinit failed")
 		fmt.Println("client == nil,", mongoClient == nil)
-		return ERR_NOT_INITIALIZED
+		return ErrNotInitialized
 	}
 
 	_, err := usersCollection.InsertOne(ctx, u)
@@ -81,7 +95,7 @@ func DeleteOneUser(id string) error {
 	// TODO: After courses controller, Delete user from course's students or teachers as well
 
 	if !IsControllerInit() {
-		return ERR_NOT_INITIALIZED
+		return ErrNotInitialized
 	}
 
 	uid, err := ValidateConvertId(id)

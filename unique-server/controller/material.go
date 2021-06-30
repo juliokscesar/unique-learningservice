@@ -9,7 +9,7 @@ import (
 
 func GetMaterialFromId(id string) (*models.Material, error) {
 	if !IsControllerInit() {
-		return nil, ERR_NOT_INITIALIZED
+		return nil, ErrNotInitialized
 	}
 
 	mid, err := ValidateConvertId(id)
@@ -30,7 +30,7 @@ func GetMaterialFromId(id string) (*models.Material, error) {
 
 func InsertOneMaterial(m *models.Material) error {
 	if !IsControllerInit() {
-		return ERR_NOT_INITIALIZED
+		return ErrNotInitialized
 	}
 
 	_, err := materialsCollection.InsertOne(ctx, m)
@@ -43,7 +43,7 @@ func InsertOneMaterial(m *models.Material) error {
 
 func DeleteOneMaterial(id string) error {
 	if !IsControllerInit() {
-		return ERR_NOT_INITIALIZED
+		return ErrNotInitialized
 	}
 
 	mid, err := ValidateConvertId(id)

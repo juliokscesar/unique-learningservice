@@ -9,7 +9,7 @@ import (
 
 func GetAssignmentFromId(id string) (*models.Assignment, error) {
 	if !IsControllerInit() {
-		return nil, ERR_NOT_INITIALIZED
+		return nil, ErrNotInitialized
 	}
 
 	aid, err := ValidateConvertId(id)
@@ -30,7 +30,7 @@ func GetAssignmentFromId(id string) (*models.Assignment, error) {
 
 func InsertOneAssignment(a *models.Assignment) error {
 	if !IsControllerInit() {
-		return ERR_NOT_INITIALIZED
+		return ErrNotInitialized
 	}
 
 	_, err := assignmentsCollection.InsertOne(ctx, a)
@@ -43,7 +43,7 @@ func InsertOneAssignment(a *models.Assignment) error {
 
 func DeleteOneAssignment(id string) error {
 	if !IsControllerInit() {
-		return ERR_NOT_INITIALIZED
+		return ErrNotInitialized
 	}
 
 	aid, err := ValidateConvertId(id)

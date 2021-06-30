@@ -25,8 +25,8 @@ var (
 	Db       string = "unique_db"
 
 	// Errors
-	ERR_NOT_INITIALIZED = errors.New("Controller not initialized")
-	ERR_INVALID_ID      = errors.New("Invalid Object ID")
+	ErrNotInitialized = errors.New("controller not initialized")
+	ErrInvalidId      = errors.New("invalid Object ID")
 )
 
 func IsControllerInit() bool {
@@ -58,7 +58,7 @@ func ControllerInit() error {
 
 func ValidateConvertId(id string) (primitive.ObjectID, error) {
 	if !primitive.IsValidObjectID(id) {
-		return primitive.NilObjectID, ERR_INVALID_ID
+		return primitive.NilObjectID, ErrInvalidId
 	}
 
 	oid, err := primitive.ObjectIDFromHex(id)
