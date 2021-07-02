@@ -2,16 +2,22 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { UserForm } from "./UserForm";
 
-const testSubmit = (email: string, password: string) => {
-  alert("Email: " + email + " Password: " + password);
+type LoginState = {
+  email: string;
+  password: string;
 }
 
-export const Login = () => {
-  return (
-      <div className="loginPage">
-        <Link to="/register">Register</Link>
+export class Login extends React.Component<{}, LoginState> {
+  state: LoginState = {
+    email: "",
+    password: "",
+  }
 
-        <UserForm title="Login" submitFn={ testSubmit } />
-      </div>
-  )
+  changeEmail = (newEmail: string) => {
+    this.setState({email: newEmail});
+  }
+
+  changePassword = (newPassword: string) => {
+    this.setState({password: newPassword});
+  }
 }

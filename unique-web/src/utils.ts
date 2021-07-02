@@ -7,3 +7,7 @@ const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@
 export const validateEmail = (email: string) => {
   return emailRegex.test(email)
 }
+
+export const capitalizeFirstLetter = (str: string) => {
+  return str.charAt(0).toLocaleUpperCase() + str.slice(1);
+}

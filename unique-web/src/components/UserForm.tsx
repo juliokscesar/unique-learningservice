@@ -1,69 +1,51 @@
 import React from "react";
-import { toggleElementById, validateEmail } from "../utils";
+import { capitalizeFirstLetter } from "../utils";
 
-type UserFormSubmitFunc = (email: string, password: string) => void;
+type FnEventChange = (e: React.ChangeEvent<HTMLInputElement>) => void;
+type FnSubmit = () => void;
 
 type UserFormProps = {
   title: string;
-  submitFn: UserFormSubmitFunc;
-};
+  inputs: {
+      name: string,
+      type: string,
+      required: boolean,
+      minLength?: number,
+      onChangeFn?: FnEventChange
+    }[];
+    submitFn: FnSubmit;
+}
 
-export const UserForm = (props: UserFormProps) => {
-  return (
-    <div className="userForm">
-      <form action="/">
-        <h3>{ props.title }</h3>
-
-        <label>Email:
-          <input
-            id="email"
-            name="email"
-            type="text"
-            placeholder="Email"
-            required={ true }
-            onChange={ (e) => {
-              const pass = document.querySelector("#password") as HTMLInputElement;
-              toggleElementById(
-                "userSubmit",
-                (validateEmail(e.target.value) && pass.value.length >= 8)
-              );
-            }}
-          />
-        </label>
-  
-        <br />
-
-        <label>Password:
-          <input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Password"
-            minLength={ 8 }
-            required={ true }
-            onChange={ (e) => {
-              const email = document.querySelector("#email") as HTMLInputElement;
-              toggleElementById(
-                "userSubmit",
-                (e.target.value.length >= 8 && validateEmail(email.value))
-              );
-            }}
-          />
-        </label>
-
-        <input 
-          id="userSubmit"
-          type="submit"
-          value={ props.title }
-          disabled={true}
-          onSubmit={ () => {
-            const email = document.querySelector("#email") as HTMLInputElement;
-            const password = document.querySelector("#password") as HTMLInputElement;
-            props.submitFn(email.value, password.value);
-          }}
+export class UserForm extends React.Component<UserFormProps> {
+  render() {
+    const inputs = this.props.inputs.map((input) => {
+      return (
+        <input
+          type={input.type}
+          id={input.name}
+          key={input.name}
+          name={input.name}
+          placeholder={capitalizeFirstLetter(input.name)}
+          required={input.required}
+          minLength={input.minLength}
+          onChange={input.onChangeFn}
         />
+      );
+    });
 
-      </form>
-    </div>
-  )
+    return (
+      <div className="userForm">
+        <h1>{capitalizeFirstLetter(this.props.title)}</h1>
+        
+        {inputs}
+        
+        <button id="submit">{capitalizeFirstLetter(this.props.title)}</button>
+
+      </div>
+    );
+  }
+
+  componentDidMount() {
+    (document.querySelector("#submit") as HTMLInputElement).addEventListener("click", this.props.submitFn);
+  }
 }
