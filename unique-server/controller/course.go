@@ -5,14 +5,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/juliokscesar/unique-learningservice/unique-server/models"
+	"github.com/juliokscesar/unique-learningservice/unique-server/uniqueErrors"
+	"github.com/juliokscesar/unique-learningservice/unique-server/utils"
 )
 
 func GetCourseFromId(id string) (*models.Course, error) {
 	if !IsControllerInit() {
-		return nil, ErrNotInitialized
+		return nil, uniqueErrors.ErrNotInitialized
 	}
 
-	cid, err := ValidateConvertId(id)
+	cid, err := utils.ValidateConvertId(id)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +32,7 @@ func GetCourseFromId(id string) (*models.Course, error) {
 
 func InsertOneCourse(c *models.Course) error {
 	if !IsControllerInit() {
-		return ErrNotInitialized
+		return uniqueErrors.ErrNotInitialized
 	}
 
 	_, err := coursesCollection.InsertOne(ctx, c)
@@ -43,10 +45,10 @@ func InsertOneCourse(c *models.Course) error {
 
 func DeleteOneCourse(id string) error {
 	if !IsControllerInit() {
-		return ErrNotInitialized
+		return uniqueErrors.ErrNotInitialized
 	}
 
-	cid, err := ValidateConvertId(id)
+	cid, err := utils.ValidateConvertId(id)
 	if err != nil {
 		return err
 	}

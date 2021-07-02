@@ -5,14 +5,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/juliokscesar/unique-learningservice/unique-server/models"
+	"github.com/juliokscesar/unique-learningservice/unique-server/uniqueErrors"
+	"github.com/juliokscesar/unique-learningservice/unique-server/utils"
 )
 
 func GetAssignmentFromId(id string) (*models.Assignment, error) {
 	if !IsControllerInit() {
-		return nil, ErrNotInitialized
+		return nil, uniqueErrors.ErrNotInitialized
 	}
 
-	aid, err := ValidateConvertId(id)
+	aid, err := utils.ValidateConvertId(id)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +32,7 @@ func GetAssignmentFromId(id string) (*models.Assignment, error) {
 
 func InsertOneAssignment(a *models.Assignment) error {
 	if !IsControllerInit() {
-		return ErrNotInitialized
+		return uniqueErrors.ErrNotInitialized
 	}
 
 	_, err := assignmentsCollection.InsertOne(ctx, a)
@@ -43,10 +45,10 @@ func InsertOneAssignment(a *models.Assignment) error {
 
 func DeleteOneAssignment(id string) error {
 	if !IsControllerInit() {
-		return ErrNotInitialized
+		return uniqueErrors.ErrNotInitialized
 	}
 
-	aid, err := ValidateConvertId(id)
+	aid, err := utils.ValidateConvertId(id)
 	if err != nil {
 		return err
 	}

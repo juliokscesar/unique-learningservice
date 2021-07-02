@@ -5,14 +5,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/juliokscesar/unique-learningservice/unique-server/models"
+	"github.com/juliokscesar/unique-learningservice/unique-server/uniqueErrors"
+	"github.com/juliokscesar/unique-learningservice/unique-server/utils"
 )
 
 func GetMaterialFromId(id string) (*models.Material, error) {
 	if !IsControllerInit() {
-		return nil, ErrNotInitialized
+		return nil, uniqueErrors.ErrNotInitialized
 	}
 
-	mid, err := ValidateConvertId(id)
+	mid, err := utils.ValidateConvertId(id)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +32,7 @@ func GetMaterialFromId(id string) (*models.Material, error) {
 
 func InsertOneMaterial(m *models.Material) error {
 	if !IsControllerInit() {
-		return ErrNotInitialized
+		return uniqueErrors.ErrNotInitialized
 	}
 
 	_, err := materialsCollection.InsertOne(ctx, m)
@@ -43,10 +45,10 @@ func InsertOneMaterial(m *models.Material) error {
 
 func DeleteOneMaterial(id string) error {
 	if !IsControllerInit() {
-		return ErrNotInitialized
+		return uniqueErrors.ErrNotInitialized
 	}
 
-	mid, err := ValidateConvertId(id)
+	mid, err := utils.ValidateConvertId(id)
 	if err != nil {
 		return err
 	}

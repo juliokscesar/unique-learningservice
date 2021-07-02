@@ -2,11 +2,9 @@ package controller
 
 import (
 	"context"
-	"errors"
 	"log"
 	"os"
 
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -23,10 +21,6 @@ var (
 
 	MongoURI string = os.Getenv("MONGOURI_UNIQUE")
 	Db       string = "unique_db"
-
-	// Errors
-	ErrNotInitialized = errors.New("controller not initialized")
-	ErrInvalidId      = errors.New("invalid Object ID")
 )
 
 func IsControllerInit() bool {
@@ -40,7 +34,7 @@ func ControllerInit() error {
 	if mongoClientErr != nil {
 		return mongoClientErr
 	}
-	log.Println("Successfully connected client (func ControllerInit) and client == nil?", mongoClient == nil)
+	log.Println("Successfully connected client (func ControllerInit)")
 
 	mongoClientErr = mongoClient.Ping(ctx, nil)
 	if mongoClientErr != nil {
@@ -54,14 +48,4 @@ func ControllerInit() error {
 	assignmentsCollection = mongoClient.Database(Db).Collection("assignments")
 
 	return nil
-}
-
-func ValidateConvertId(id string) (primitive.ObjectID, error) {
-	if !primitive.IsValidObjectID(id) {
-		return primitive.NilObjectID, ErrInvalidId
-	}
-
-	oid, err := primitive.ObjectIDFromHex(id)
-
-	return oid, err
 }

@@ -14,7 +14,6 @@ import (
 
 func errorHandler(w http.ResponseWriter, r *http.Request, err error) {
 	w.Write([]byte(`{"error": "` + err.Error() + `"}`))
-	log.Println("Error:", err)
 }
 
 func registerUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -50,6 +49,32 @@ func registerUserHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(u)
 }
 
+func loginUserHandler(w http.ResponseWriter, r *http.Request) {
+	utils.LogRequest(r)
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	w.Header().Set("Content-Type", "application/json")
+
+	err := r.ParseForm()
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+
+	u, err := controller.LoginUser(email, password)
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(u)
+}
+
 func main() {
 	router := mux.NewRouter()
 
@@ -63,6 +88,7 @@ func main() {
 	})
 
 	router.HandleFunc("/api/user/register", registerUserHandler).Methods(http.MethodPost, http.MethodOptions)
+	router.HandleFunc("/api/user/login", loginUserHandler).Methods(http.MethodPost, http.MethodOptions)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
