@@ -1,6 +1,9 @@
 import React from "react";
+import { API_BASE_URI } from "../constants";
 import { Link } from "react-router-dom";
 import { UserForm } from "./UserForm";
+import QueryString from "qs";
+import { toggleElementById, validateEmail } from "../utils";
 
 type LoginState = {
   email: string;
@@ -19,5 +22,67 @@ export class Login extends React.Component<{}, LoginState> {
 
   changePassword = (newPassword: string) => {
     this.setState({password: newPassword});
+  }
+
+  loginSubmit = async () => {
+    let dataResult: string = await fetch(API_BASE_URI + "user/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: QueryString.stringify(this.state)
+    })
+      .then((res) => res.json())
+      .then((data) => JSON.stringify(data));
+    
+    return JSON.parse(dataResult);
+  };
+
+  render() {
+    const inputFields = [
+      {
+        name: "email",
+        type: "text",
+        required: true,
+        onChangeFn: (e: React.ChangeEvent<HTMLInputElement>) => {
+          const pass = (document.querySelector("#password") as HTMLInputElement).value;
+          toggleElementById("submit", (validateEmail(e.target.value) && pass.length >= 8));
+          this.changeEmail(e.target.value);
+        }
+      },
+      {
+        name: "password",
+        type: "password",
+        required: true,
+        onChangeFn: (e: React.ChangeEvent<HTMLInputElement>) => {
+          const email = (document.querySelector("#email") as HTMLInputElement).value;
+          toggleElementById("submit", (validateEmail(email) && e.target.value.length >= 8));
+          this.changePassword(e.target.value);
+        }
+      }
+    ];
+
+    // TODO: Finish login success.
+    return (
+      <div className="loginForm">
+        <UserForm
+          title="Login"
+          inputs={inputFields}
+          submitFn={async () => {
+            const data = await this.loginSubmit();
+
+            if (data["error"] !== undefined) {
+              document.location.replace("/error?err=" + String(data["error"]).replace(" ", "+"));
+            } else {
+              document.location.replace("/secret");
+            }
+          }}
+        />
+
+        <br />
+
+        <Link to="/register">Register</Link>
+      </div>
+    );
   }
 }

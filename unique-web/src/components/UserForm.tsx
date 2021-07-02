@@ -39,7 +39,7 @@ export class UserForm extends React.Component<UserFormProps> {
         
         {inputs}
         
-        <button id="submit">{capitalizeFirstLetter(this.props.title)}</button>
+        <button id="submit" disabled={true}>{capitalizeFirstLetter(this.props.title)}</button>
 
       </div>
     );
