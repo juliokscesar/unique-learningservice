@@ -75,6 +75,26 @@ func loginUserHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(u)
 }
 
+func userFromIdHandler(w http.ResponseWriter, r *http.Request) {
+	utils.LogRequest(r)
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	w.Header().Set("Content-Type", "application/json")
+
+	uid := mux.Vars(r)["id"]
+	log.Println("uid =", uid, "(func userFromIdHandler)")
+
+	u, err := controller.GetUserFromID(uid)
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(u)
+}
+
 func main() {
 	router := mux.NewRouter()
 
@@ -89,6 +109,8 @@ func main() {
 
 	router.HandleFunc("/api/user/register", registerUserHandler).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/api/user/login", loginUserHandler).Methods(http.MethodPost, http.MethodOptions)
+
+	router.HandleFunc("/api/user/id/{id}", userFromIdHandler).Methods(http.MethodGet)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
