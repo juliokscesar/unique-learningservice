@@ -7,14 +7,14 @@ type FnSubmit = () => void;
 type UserFormProps = {
   title: string;
   inputs: {
-      name: string,
-      type: string,
-      required: boolean,
-      minLength?: number,
-      onChangeFn?: FnEventChange
-    }[];
-    submitFn: FnSubmit;
-}
+    name: string;
+    type: string;
+    required: boolean;
+    minLength?: number;
+    onChangeFn?: FnEventChange;
+  }[];
+  submitFn: FnSubmit;
+};
 
 export class UserForm extends React.Component<UserFormProps> {
   render() {
@@ -36,16 +36,20 @@ export class UserForm extends React.Component<UserFormProps> {
     return (
       <div className="userForm">
         <h1>{capitalizeFirstLetter(this.props.title)}</h1>
-        
-        {inputs}
-        
-        <button id="submit" disabled={true}>{capitalizeFirstLetter(this.props.title)}</button>
 
+        {inputs}
+
+        <button id="submit" disabled={true}>
+          {capitalizeFirstLetter(this.props.title)}
+        </button>
       </div>
     );
   }
 
   componentDidMount() {
-    (document.querySelector("#submit") as HTMLInputElement).addEventListener("click", this.props.submitFn);
+    (document.querySelector("#submit") as HTMLInputElement).addEventListener(
+      "click",
+      this.props.submitFn
+    );
   }
 }

@@ -17,7 +17,7 @@ export class Error extends React.Component<ErrorProps, ErrorState> {
     const errParam = params.get("err");
 
     this.setState({
-      err: errParam === null ? "Error page" : errParam
+      err: errParam === null ? "Error page" : errParam,
     });
   }
 

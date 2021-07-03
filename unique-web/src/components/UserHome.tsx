@@ -6,10 +6,12 @@ import { API_BASE_URI } from "../constants";
 type UserHomeState = {
   isLoaded: boolean;
   error: string | null;
-  loggedUser: {
-    name: string,
-    id: string
-  } | undefined;
+  loggedUser:
+    | {
+        name: string;
+        id: string;
+      }
+    | undefined;
 };
 
 export class UserHome extends React.Component {
@@ -25,25 +27,25 @@ export class UserHome extends React.Component {
       this.setState({
         error: null,
         isLoaded: true,
-        loggedUser: undefined
+        loggedUser: undefined,
       });
     } else {
       fetch(API_BASE_URI + "user/id/" + userId)
-        .then(res => res.json())
+        .then((res) => res.json())
         .then(
           (result) => {
             this.setState({
               isLoaded: true,
               loggedUser: {
                 name: result["name"],
-                id: userId
-              }
+                id: userId,
+              },
             });
           },
           (err) => {
             this.setState({
               isLoaded: true,
-              error: err
+              error: err,
             });
           }
         );
@@ -54,9 +56,7 @@ export class UserHome extends React.Component {
     const { isLoaded, error, loggedUser } = this.state;
 
     if (error) {
-      return (
-        <Redirect to={"/error?err=" + error} />
-      );
+      return <Redirect to={"/error?err=" + error} />;
     } else if (!isLoaded) {
       return (
         <div>
@@ -70,9 +70,7 @@ export class UserHome extends React.Component {
         </div>
       );
     } else {
-      return (
-        <Redirect to="/login" />
-      );
+      return <Redirect to="/login" />;
     }
   }
 }
