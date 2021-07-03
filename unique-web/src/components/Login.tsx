@@ -3,7 +3,8 @@ import { API_BASE_URI } from "../constants";
 import { Link } from "react-router-dom";
 import { UserForm } from "./UserForm";
 import QueryString from "qs";
-import { toggleElementById, validateEmail } from "../utils";
+import { cookies } from "../index";
+import { capitalizeFirstLetter, toggleElementById, validateEmail } from "../utils";
 
 type LoginState = {
   email: string;
@@ -36,6 +37,15 @@ export class Login extends React.Component<{}, LoginState> {
       .then((data) => JSON.stringify(data));
     
     return JSON.parse(dataResult);
+  };
+
+  onSuccess = (userId: string) => {
+    cookies.set("luid", userId, {
+      path: "/",
+      expires: new Date(Date.now() + 60 * 60 * 24 * 365 * 10),
+      maxAge: 60 * 60 * 24 * 365 * 10,
+      sameSite: "lax"
+    });
   };
 
   render() {
@@ -72,9 +82,13 @@ export class Login extends React.Component<{}, LoginState> {
             const data = await this.loginSubmit();
 
             if (data["error"] !== undefined) {
-              document.location.replace("/error?err=" + String(data["error"]).replace(" ", "+"));
+              document.location.replace(
+                "/error?err=" + 
+                capitalizeFirstLetter(String(data["error"]).replace(" ", "+"))
+              );
             } else {
-              document.location.replace("/secret");
+              this.onSuccess(data["id"]);
+              document.location.replace("/");
             }
           }}
         />

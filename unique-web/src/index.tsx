@@ -1,11 +1,11 @@
 import React from "react";
+import Cookies from "universal-cookie/es6";
 import ReactDOM from "react-dom";
-import { CookiesProvider } from "react-cookie";
 import AppRouter from "./AppRouter";
 
+export const cookies = new Cookies();
+
 ReactDOM.render(
-  <CookiesProvider>
-    <AppRouter />
-  </CookiesProvider>,
+  <AppRouter />,
   document.getElementById("root")
 );
