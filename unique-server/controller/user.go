@@ -39,7 +39,7 @@ func GetUserFromEmail(email string) (*models.User, error) {
 func LoginUser(email, password string) (*models.User, error) {
 	u, err := GetUserFromEmail(email)
 	if err != nil {
-		return nil, err
+		return nil, uniqueErrors.ErrInvalidUser
 	}
 
 	if !u.CheckPassword(password) {

@@ -14,5 +14,6 @@ var (
 
 	// User Errors
 	ErrEmailRegistered = errors.New("email is already registered")
+	ErrInvalidUser     = errors.New("invalid user email")
 	ErrInvalidPassword = errors.New("invalid password")
 )
