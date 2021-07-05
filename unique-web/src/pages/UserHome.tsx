@@ -2,6 +2,7 @@ import React from "react";
 import { cookies } from "../index";
 import { Redirect } from "react-router-dom";
 import { API_BASE_URI } from "../constants";
+import { setTitle } from "../utils";
 
 type UserHomeState = {
   isLoaded: boolean;
@@ -24,11 +25,7 @@ export class UserHome extends React.Component {
   componentDidMount() {
     const userId = cookies.get("luid");
     if (userId === undefined) {
-      this.setState({
-        error: null,
-        isLoaded: true,
-        loggedUser: undefined,
-      });
+      document.location.href = "/login";
     } else {
       fetch(API_BASE_URI + "user/" + userId)
         .then((res) => res.json())
@@ -50,6 +47,8 @@ export class UserHome extends React.Component {
           }
         );
     }
+
+    setTitle("Home");
   }
 
   render() {

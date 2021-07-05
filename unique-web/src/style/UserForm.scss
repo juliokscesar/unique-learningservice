@@ -1,0 +1,22 @@
+@import "./index.scss";
+
+.userForm {
+  margin: auto;
+  width: 50%;
+  padding-left: 10px;
+  text-align: center;
+
+  input {
+    display: block;
+    padding: 12px 20px;
+    margin: auto;
+    margin-bottom: 10px;
+    width: 75%;
+    box-sizing: border-box;
+  }
+
+  button {
+    padding: 12px 20px;
+    margin-top: 10px;
+  }
+}

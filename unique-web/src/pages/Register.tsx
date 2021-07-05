@@ -1,24 +1,28 @@
 import React from "react";
-import { API_BASE_URI } from "../constants";
+// import * as $ from "jquery";
 import { Link } from "react-router-dom";
-import { UserForm } from "./UserForm";
+import { toggleElementById, validateEmail } from "../utils";
+import { UserForm } from "../components/UserForm";
+import { API_BASE_URI } from "../constants";
 import QueryString from "qs";
-import { cookies } from "../index";
-import {
-  capitalizeFirstLetter,
-  toggleElementById,
-  validateEmail,
-} from "../utils";
 
-type LoginState = {
+type RegisterState = {
+  name: string;
   email: string;
   password: string;
+  resultURL: string;
 };
 
-export class Login extends React.Component<{}, LoginState> {
-  state: LoginState = {
+export class Register extends React.Component<{}, RegisterState> {
+  state: RegisterState = {
+    name: "",
     email: "",
     password: "",
+    resultURL: "/",
+  };
+
+  changeName = (newName: string) => {
+    this.setState({ name: newName });
   };
 
   changeEmail = (newEmail: string) => {
@@ -29,8 +33,12 @@ export class Login extends React.Component<{}, LoginState> {
     this.setState({ password: newPassword });
   };
 
-  loginSubmit = async () => {
-    let dataResult: string = await fetch(API_BASE_URI + "user/login", {
+  changeResultURL = (newURL: string) => {
+    this.setState({ resultURL: newURL });
+  };
+
+  registerSubmit = async () => {
+    let dataResult: string = await fetch(API_BASE_URI + "user/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -43,17 +51,15 @@ export class Login extends React.Component<{}, LoginState> {
     return JSON.parse(dataResult);
   };
 
-  onSuccess = (userId: string) => {
-    cookies.set("luid", userId, {
-      path: "/",
-      expires: new Date(Date.now() + 60 * 60 * 24 * 365 * 10),
-      maxAge: 60 * 60 * 24 * 365 * 10,
-      sameSite: "lax",
-    });
-  };
-
   render() {
     const inputFields = [
+      {
+        name: "name",
+        type: "text",
+        required: true,
+        onChangeFn: (e: React.ChangeEvent<HTMLInputElement>) =>
+          this.changeName(e.target.value),
+      },
       {
         name: "email",
         type: "text",
@@ -72,6 +78,7 @@ export class Login extends React.Component<{}, LoginState> {
         name: "password",
         type: "password",
         required: true,
+        minLength: 8,
         onChangeFn: (e: React.ChangeEvent<HTMLInputElement>) => {
           const email = (document.querySelector("#email") as HTMLInputElement)
             .value;
@@ -85,29 +92,27 @@ export class Login extends React.Component<{}, LoginState> {
     ];
 
     return (
-      <div className="loginForm">
+      <div className="registerForm">
         <UserForm
-          title="Login"
+          title="Register"
           inputs={inputFields}
           submitFn={async () => {
-            const data = await this.loginSubmit();
+            const data = await this.registerSubmit();
 
             if (data["error"] !== undefined) {
-              document.location.replace(
-                "/error?err=" +
-                  capitalizeFirstLetter(String(data["error"]).replace(" ", "+"))
-              );
+              this.changeResultURL("/error?err=Email+Registered");
             } else {
-              this.onSuccess(data["id"]);
-              document.location.href = "/";
+              this.changeResultURL("/login");
             }
+
+            document.location.href = this.state.resultURL;
           }}
         />
 
         <br />
 
         <p>
-          Not registered yet? Register <Link to="/register">here.</Link>
+          Already have an account? Login <Link to="/login">here.</Link>
         </p>
       </div>
     );

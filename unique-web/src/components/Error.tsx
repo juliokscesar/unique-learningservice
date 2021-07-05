@@ -1,5 +1,6 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
+import { UNIQUE_BASE_TITLE } from "../constants";
 
 interface ErrorProps extends RouteComponentProps<any> {}
 
@@ -19,6 +20,8 @@ export class Error extends React.Component<ErrorProps, ErrorState> {
     this.setState({
       err: errParam === null ? "Error page" : errParam,
     });
+
+    document.title = UNIQUE_BASE_TITLE + "Error";
   }
 
   render() {

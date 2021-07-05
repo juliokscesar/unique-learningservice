@@ -2,13 +2,16 @@ import React from "react";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import { Toast } from "./components/Toast";
 import { Error } from "./components/Error";
-import { UserHome } from "./components/UserHome";
-import { Login } from "./components/Login";
-import { Register } from "./components/Register";
+import { UserHome } from "./pages/UserHome";
+import { Login } from "./pages/Login";
+import { Register } from "./pages/Register";
 import { cookies } from "./index";
+import { Profile } from "./pages/Profile";
+import { Logout } from "./pages/Logout";
 
 class AppRouter extends React.Component {
   render() {
+    const luid = cookies.get("luid");
     return (
       <div className="App">
         <BrowserRouter>
@@ -20,11 +23,22 @@ class AppRouter extends React.Component {
             <Route path="/error" component={Error} />
 
             <Route path="/login">
-              { (cookies.get("luid") === undefined) ? <Login /> : <Redirect to="/" /> }
+              {luid === undefined ? <Login /> : <Redirect to="/" />}
             </Route>
 
             <Route path="/register">
-            { (cookies.get("luid") === undefined) ? <Register /> : <Redirect to="/" /> }
+              {luid === undefined ? <Register /> : <Redirect to="/" />}
+            </Route>
+
+            <Route path="/logout">
+              <Logout />
+            </Route>
+
+            <Route path="/user/profile/:uid" component={Profile} />
+            <Route path="/user/profile">
+              <Redirect
+                to={luid === undefined ? "/login" : "/user/profile/" + luid}
+              />
             </Route>
 
             <Route path="/secret">
