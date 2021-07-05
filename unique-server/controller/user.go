@@ -10,19 +10,8 @@ import (
 )
 
 func GetUserFromID(id string) (*models.User, error) {
-	if !IsControllerInit() {
-		return nil, uniqueErrors.ErrNotInitialized
-	}
-
-	uid, err := utils.ValidateConvertId(id)
-	if err != nil {
-		return nil, err
-	}
-
-	filter := bson.D{primitive.E{Key: "_id", Value: uid}}
-
 	u := new(models.User)
-	err = usersCollection.FindOne(ctx, filter).Decode(u)
+	err := getById(USERS_COLLECTION, id, u)
 	if err != nil {
 		return nil, err
 	}
@@ -31,10 +20,6 @@ func GetUserFromID(id string) (*models.User, error) {
 }
 
 func GetUserFromEmail(email string) (*models.User, error) {
-	if !IsControllerInit() {
-		return nil, uniqueErrors.ErrNotInitialized
-	}
-
 	err := utils.ValidateEmail(email)
 	if err != nil {
 		return nil, err
@@ -43,7 +28,7 @@ func GetUserFromEmail(email string) (*models.User, error) {
 	filter := bson.D{primitive.E{Key: "email", Value: email}}
 
 	u := new(models.User)
-	err = usersCollection.FindOne(ctx, filter).Decode(u)
+	err = getByFilter(USERS_COLLECTION, filter, u)
 	if err != nil {
 		return nil, err
 	}
@@ -74,36 +59,11 @@ func RegisterUser(u *models.User) error {
 }
 
 func insertOneUser(u *models.User) error {
-	if !IsControllerInit() {
-		return uniqueErrors.ErrNotInitialized
-	}
-
-	_, err := usersCollection.InsertOne(ctx, u)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return insertOne(USERS_COLLECTION, u)
 }
 
 func DeleteOneUser(id string) error {
 	// TODO: After courses controller, Delete user from course's students or teachers as well
 
-	if !IsControllerInit() {
-		return uniqueErrors.ErrNotInitialized
-	}
-
-	uid, err := utils.ValidateConvertId(id)
-	if err != nil {
-		return err
-	}
-
-	filter := bson.D{primitive.E{Key: "_id", Value: uid}}
-
-	_, err = usersCollection.DeleteOne(ctx, filter)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return deleteById(USERS_COLLECTION, id)
 }
