@@ -1,5 +1,6 @@
 import React from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
+import { NavBar } from "../components/NavBar";
 import { API_BASE_URI } from "../constants";
 import { setTitle } from "../utils";
 
@@ -30,7 +31,7 @@ export class Profile extends React.Component<ProfileProps, ProfileState> {
     setTitle("Profile");
 
     if (this.props.match.params.uid !== undefined) {
-      fetch(API_BASE_URI + "user/" + this.props.match.params.uid)
+      fetch(API_BASE_URI + "user/profile/" + this.props.match.params.uid)
         .then((res) => res.json())
         .then(
           (result) => {
@@ -71,12 +72,14 @@ export class Profile extends React.Component<ProfileProps, ProfileState> {
     } else if (!isLoaded) {
       return (
         <div>
-          <h1>Loading your informations...</h1>
+          <h1>Loading the informations...</h1>
         </div>
       );
     } else if (userInfo !== undefined) {
       return (
-        <div>
+        <div className="profilePage">
+          <NavBar />
+
           <h1>{userInfo.name}'s Profile</h1>
         </div>
       );

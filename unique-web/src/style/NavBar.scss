@@ -1,0 +1,31 @@
+.navBar {
+  border-radius: 10px;
+  background-color: #37373d;
+
+  .navBarUl {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+
+    #navLogout {
+      float: right;
+    }
+
+    li {
+      float: left;
+
+      a {
+        color: white;
+        display: block;
+        padding: 14px 16px;
+        text-align: center;
+        text-decoration: none;
+      }
+      a:hover {
+        border-radius: 10px;
+        background-color: #2b2b30;
+      }
+    }
+  }
+}

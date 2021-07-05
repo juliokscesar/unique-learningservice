@@ -19,9 +19,9 @@ type UserFormProps = {
 
 export class UserForm extends React.Component<UserFormProps> {
   render() {
+    const submitBtn = document.querySelector("#submit") as HTMLInputElement;
     const inputs = this.props.inputs.map((input) => {
       return (
-        //<div className={"input" + capitalizeFirstLetter(input.name)}>
         <input
           type={input.type}
           id={input.name}
@@ -31,8 +31,13 @@ export class UserForm extends React.Component<UserFormProps> {
           required={input.required}
           minLength={input.minLength}
           onChange={input.onChangeFn}
+          onKeyUp={(e) => {
+            e.preventDefault();
+            if (e.key === "Enter" && !submitBtn.disabled) {
+              submitBtn.click();
+            }
+          }}
         />
-        //</div>
       );
     });
 
@@ -40,31 +45,26 @@ export class UserForm extends React.Component<UserFormProps> {
       <div className="userForm">
         <h1>{capitalizeFirstLetter(this.props.title)}</h1>
 
-        {inputs}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            this.props.submitFn();
+          }}
+        >
+          {inputs}
 
-        <button id="submit" disabled={true}>
-          {capitalizeFirstLetter(this.props.title)}
-        </button>
+          <input
+            id="submit"
+            type="submit"
+            value={this.props.title}
+            disabled={true}
+          />
+        </form>
       </div>
     );
   }
 
   componentDidMount() {
     setTitle(capitalizeFirstLetter(this.props.title));
-
-    const submitBtn = document.querySelector("#submit") as HTMLInputElement;
-
-    for (let input of this.props.inputs) {
-      (
-        document.querySelector("#" + input.name) as HTMLInputElement
-      ).addEventListener("keyup", (e) => {
-        e.preventDefault();
-        if (e.key === "Enter") {
-          submitBtn.click();
-        }
-      });
-    }
-
-    submitBtn.addEventListener("click", this.props.submitFn);
   }
 }

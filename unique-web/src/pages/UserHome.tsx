@@ -1,6 +1,7 @@
 import React from "react";
 import { cookies } from "../index";
 import { Redirect } from "react-router-dom";
+import { NavBar } from "../components/NavBar";
 import { API_BASE_URI } from "../constants";
 import { setTitle } from "../utils";
 
@@ -31,6 +32,12 @@ export class UserHome extends React.Component {
         .then((res) => res.json())
         .then(
           (result) => {
+            if (result["error"] !== undefined) {
+              this.setState({
+                isLoaded: true,
+                error: result["error"],
+              });
+            }
             this.setState({
               isLoaded: true,
               loggedUser: {
@@ -64,7 +71,9 @@ export class UserHome extends React.Component {
       );
     } else if (loggedUser !== undefined) {
       return (
-        <div>
+        <div className="userHome">
+          <NavBar />
+
           <h1>Hello, {loggedUser.name}!</h1>
         </div>
       );

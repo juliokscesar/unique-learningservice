@@ -14,5 +14,8 @@ export class Logout extends React.Component {
     if (cookies.get("luid") !== undefined) {
       cookies.remove("luid");
     }
+    if (cookies.get("puid") !== undefined) {
+      cookies.remove("puid");
+    }
   }
 }

@@ -44,8 +44,14 @@ export class Login extends React.Component<{}, LoginState> {
     return JSON.parse(dataResult);
   };
 
-  onSuccess = (userId: string) => {
+  onSuccess = (userId: string, publicId: string) => {
     cookies.set("luid", userId, {
+      path: "/",
+      expires: new Date(Date.now() + 60 * 60 * 24 * 365 * 10),
+      maxAge: 60 * 60 * 24 * 365 * 10,
+      sameSite: "lax",
+    });
+    cookies.set("puid", publicId, {
       path: "/",
       expires: new Date(Date.now() + 60 * 60 * 24 * 365 * 10),
       maxAge: 60 * 60 * 24 * 365 * 10,
@@ -94,11 +100,10 @@ export class Login extends React.Component<{}, LoginState> {
             const data = await this.loginSubmit();
 
             if (data["error"] !== undefined) {
-              document.location.replace(
-                "/error?err=" + capitalizeFirstLetter(String(data["error"]))
-              );
+              document.location.href =
+                "/error?err=" + capitalizeFirstLetter(String(data["error"]));
             } else {
-              this.onSuccess(data["id"]);
+              this.onSuccess(data["id"], data["public_id"]);
               document.location.href = "/";
             }
           }}

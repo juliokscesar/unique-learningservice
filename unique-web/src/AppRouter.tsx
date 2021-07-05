@@ -12,6 +12,7 @@ import { Logout } from "./pages/Logout";
 class AppRouter extends React.Component {
   render() {
     const luid = cookies.get("luid");
+    const puid = cookies.get("puid");
     return (
       <div className="App">
         <BrowserRouter>
@@ -37,7 +38,7 @@ class AppRouter extends React.Component {
             <Route path="/user/profile/:uid" component={Profile} />
             <Route path="/user/profile">
               <Redirect
-                to={luid === undefined ? "/login" : "/user/profile/" + luid}
+                to={luid === undefined ? "/login" : "/user/profile/" + puid}
               />
             </Route>
 

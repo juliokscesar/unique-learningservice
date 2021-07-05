@@ -7,16 +7,13 @@
   text-align: center;
 
   input {
+    border-radius: 7px;
+
     display: block;
     padding: 12px 20px;
     margin: auto;
     margin-bottom: 10px;
     width: 75%;
     box-sizing: border-box;
-  }
-
-  button {
-    padding: 12px 20px;
-    margin-top: 10px;
   }
 }
