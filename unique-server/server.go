@@ -25,6 +25,7 @@ func main() {
 	router.HandleFunc("/api/user/login", controller.LoginUserHandler).Methods(http.MethodPost, http.MethodOptions)
 
 	router.HandleFunc("/api/user/{id}", controller.UserFromIdHandler).Methods(http.MethodGet)
+	router.HandleFunc("/api/user/profile/{publicId}", controller.UserFromPublicIdHandler).Methods(http.MethodGet)
 
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

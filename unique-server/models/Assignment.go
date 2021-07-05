@@ -40,10 +40,6 @@ func NewAssignmentFromMaterial(info Material, deadline time.Time, blockOnDeadlin
 	return a
 }
 
-func (a *Assignment) updateDate() {
-	a.Info.updateDate()
-}
-
 func (a *Assignment) ChangeDeadline(newDeadline time.Time) {
 	a.Deadline = newDeadline
 

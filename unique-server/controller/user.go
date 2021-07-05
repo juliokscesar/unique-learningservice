@@ -19,6 +19,19 @@ func GetUserFromID(id string) (*models.User, error) {
 	return u, nil
 }
 
+func GetUserFromPublicId(publicId string) (*models.User, error) {
+	u := new(models.User)
+	
+	filter := bson.D{primitive.E{Key: "public_id", Value: publicId}}
+	err := getByFilter(USERS_COLLECTION, filter, u)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
+}
+
 func GetUserFromEmail(email string) (*models.User, error) {
 	err := utils.ValidateEmail(email)
 	if err != nil {

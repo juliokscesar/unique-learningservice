@@ -5,12 +5,16 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
+
+	"github.com/juliokscesar/unique-learningservice/unique-server/utils"
 )
 
 const HashCost = 14
 
 type User struct {
 	ID primitive.ObjectID `bson:"_id" json:"id"`
+
+	PublicId string `bson:"public_id" json:"public_id"`
 
 	CreatedAt time.Time `bson:"created_at" json:"created_at"`
 	UpdatedAt time.Time `bson:"updated_at" json:"updated_at"`
@@ -25,6 +29,8 @@ type User struct {
 func NewUser(name, email, password string) (*User, error) {
 	u := &User{
 		ID: primitive.NewObjectID(),
+		
+		PublicId: utils.RandSeq(24),
 
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"log"
+	"math/rand"
 	"net/http"
 	"net/mail"
 
@@ -9,6 +10,19 @@ import (
 
 	"github.com/juliokscesar/unique-learningservice/unique-server/uniqueErrors"
 )
+
+var (
+	seqChars = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+)
+
+func RandSeq(n int) string {
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = seqChars[rand.Intn(len(seqChars))]
+	}
+
+	return string(b)
+}
 
 func LogRequest(r *http.Request) {
 	log.Println(r.Method, r.URL.Path, "by", r.RemoteAddr)

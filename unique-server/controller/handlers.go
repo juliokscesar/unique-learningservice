@@ -86,3 +86,18 @@ func UserFromIdHandler(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(u)
 }
+
+
+func UserFromPublicIdHandler(w http.ResponseWriter, r *http.Request) {
+	setupHandler(w, r)
+
+	publicId := mux.Vars(r)["publicId"]
+
+	u, err := GetUserFromPublicId(publicId)
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(u)
+}
