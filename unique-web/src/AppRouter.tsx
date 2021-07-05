@@ -5,6 +5,7 @@ import { Error } from "./components/Error";
 import { UserHome } from "./components/UserHome";
 import { Login } from "./components/Login";
 import { Register } from "./components/Register";
+import { cookies } from "./index";
 
 class AppRouter extends React.Component {
   render() {
@@ -19,11 +20,11 @@ class AppRouter extends React.Component {
             <Route path="/error" component={Error} />
 
             <Route path="/login">
-              <Login />
+              { (cookies.get("luid") === undefined) ? <Login /> : <Redirect to="/" /> }
             </Route>
 
             <Route path="/register">
-              <Register />
+            { (cookies.get("luid") === undefined) ? <Register /> : <Redirect to="/" /> }
             </Route>
 
             <Route path="/secret">

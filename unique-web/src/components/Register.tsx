@@ -48,7 +48,7 @@ export class Register extends React.Component<{}, RegisterState> {
       .then((res) => res.json())
       .then((data) => JSON.stringify(data));
 
-    return dataResult;
+    return JSON.parse(dataResult);
   };
 
   render() {
@@ -97,8 +97,7 @@ export class Register extends React.Component<{}, RegisterState> {
           title="Register"
           inputs={inputFields}
           submitFn={async () => {
-            const res = await this.registerSubmit();
-            const data = JSON.parse(res);
+            const data = await this.registerSubmit();
 
             if (data["error"] !== undefined) {
               this.changeResultURL("/error?err=Email+Registered");
@@ -106,13 +105,15 @@ export class Register extends React.Component<{}, RegisterState> {
               this.changeResultURL("/login");
             }
 
-            document.location.replace(this.state.resultURL);
+            document.location.href = this.state.resultURL;
           }}
         />
 
         <br />
 
-        <Link to="/login">Login</Link>
+        <p>
+          Already have an account? Login <Link to="/login">here.</Link>
+        </p>
       </div>
     );
   }

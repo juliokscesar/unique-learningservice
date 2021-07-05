@@ -30,7 +30,7 @@ export class UserHome extends React.Component {
         loggedUser: undefined,
       });
     } else {
-      fetch(API_BASE_URI + "user/id/" + userId)
+      fetch(API_BASE_URI + "user/" + userId)
         .then((res) => res.json())
         .then(
           (result) => {

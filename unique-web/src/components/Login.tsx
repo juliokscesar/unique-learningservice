@@ -99,14 +99,16 @@ export class Login extends React.Component<{}, LoginState> {
               );
             } else {
               this.onSuccess(data["id"]);
-              document.location.replace("/");
+              document.location.href = "/";
             }
           }}
         />
 
         <br />
 
-        <Link to="/register">Register</Link>
+        <p>
+          Not registered yet? Register <Link to="/register">here.</Link>
+        </p>
       </div>
     );
   }
