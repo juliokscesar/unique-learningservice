@@ -82,6 +82,36 @@ func getById(collection string, id string, decodeTo interface{}) error {
 	return err
 }
 
+func getManyByFilter(collection string, filter interface{}, decodeTo interface{}) error {
+	r, err := collections[collection].Find(ctx, filter)
+	if err != nil {
+		return err
+	}
+
+	return r.All(ctx, decodeTo)
+}
+
+func getManyById(collection string, ids []string, decodeTo interface{}) error {
+	idsLen := len(ids)
+	convertedIds := make([]primitive.ObjectID, idsLen)
+
+	for _, id := range ids {
+		convertedId, err := utils.ValidateConvertId(id)
+		if err != nil {
+			return err
+		}
+		convertedIds = append(convertedIds, convertedId)
+	}
+
+	filter := bson.D{
+		primitive.E{Key: "_id", Value: bson.D{
+			primitive.E{Key: "$in", Value: convertedIds},
+		}},
+	}
+
+	return getManyByFilter(collection, filter, decodeTo)
+}
+
 // Controller insert functions
 func insertOne(collection string, obj interface{}) error {
 	if !IsControllerInit() {
@@ -92,8 +122,33 @@ func insertOne(collection string, obj interface{}) error {
 	return err
 }
 
+// Controller update functions
+func updateOne(collection string, filter interface{}, updateOp interface{}) error {
+	if !IsControllerInit() {
+		return uniqueErrors.ErrNotInitialized
+	}
+
+	_, err := collections[collection].UpdateOne(ctx, filter, updateOp)
+	if err != nil {
+		return err
+	}
+	
+	return nil
+}
+
+func updateById(collection string, id string, updateOp interface{}) error {
+	convertedId, err := utils.ValidateConvertId(id)
+	if err != nil {
+		return err
+	}
+
+	filter := bson.D{primitive.E{Key: "_id", Value: convertedId}}
+	
+	return updateOne(collection, filter, updateOp)
+}
+
 // Controller delete functions
-func deleteOne(collection string, filter primitive.D) error {
+func deleteOneByFilter(collection string, filter primitive.D) error {
 	if !IsControllerInit() {
 		return uniqueErrors.ErrNotInitialized
 	}
@@ -109,5 +164,5 @@ func deleteById(collection string, id string) error {
 	}
 
 	filter := bson.D{primitive.E{Key: "_id", Value: convertedId}}
-	return deleteOne(collection, filter)
+	return deleteOneByFilter(collection, filter)
 }

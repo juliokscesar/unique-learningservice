@@ -27,5 +27,9 @@ func main() {
 	router.HandleFunc("/api/user/{id}", controller.UserFromIdHandler).Methods(http.MethodGet)
 	router.HandleFunc("/api/user/profile/{publicId}", controller.UserFromPublicIdHandler).Methods(http.MethodGet)
 
+	router.HandleFunc("/api/course/{id}", controller.CourseFromIdHandler).Methods(http.MethodGet)
+	router.HandleFunc("/api/courses/{ids}", controller.CoursesFromIdHandler).Methods(http.MethodGet)
+	router.HandleFunc("/api/course/create", controller.CreateCourseHandler).Methods(http.MethodPost, http.MethodOptions)
+
 	log.Fatal(http.ListenAndServe(":8080", router))
 }

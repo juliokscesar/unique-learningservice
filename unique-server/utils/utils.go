@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"net/http"
 	"net/mail"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
@@ -16,6 +17,8 @@ var (
 )
 
 func RandSeq(n int) string {
+	rand.Seed(time.Now().UTC().UnixNano())
+
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = seqChars[rand.Intn(len(seqChars))]

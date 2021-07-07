@@ -49,6 +49,27 @@ func GetUserFromEmail(email string) (*models.User, error) {
 	return u, nil
 }
 
+func AddUserCourse(uid string, cid string) error {
+	newU, err := GetUserFromID(uid)
+	if err != nil {
+		return err
+	}
+
+	convertedCid, err := utils.ValidateConvertId(cid)
+	if err != nil {
+		return err
+	}
+
+	newU.AppendCourses(convertedCid)
+
+	err = updateUserById(uid, bson.D{primitive.E{Key: "$set", Value: newU}})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func LoginUser(email, password string) (*models.User, error) {
 	u, err := GetUserFromEmail(email)
 	if err != nil {
@@ -73,6 +94,10 @@ func RegisterUser(u *models.User) error {
 
 func insertOneUser(u *models.User) error {
 	return insertOne(USERS_COLLECTION, u)
+}
+
+func updateUserById(uid string, updateOp interface{}) error {
+	return updateById(USERS_COLLECTION, uid, updateOp)
 }
 
 func DeleteOneUser(id string) error {

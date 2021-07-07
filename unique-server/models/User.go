@@ -11,6 +11,11 @@ import (
 
 const HashCost = 14
 
+// type Img_t struct {
+// 	ImgType string `bson:"img_type" json:"img_type"`
+// 	Buffer []byte `bson:"buffer" json:"buffer"`
+// }
+
 type User struct {
 	ID primitive.ObjectID `bson:"_id" json:"id"`
 
@@ -22,6 +27,8 @@ type User struct {
 	Name         string `bson:"name" json:"name"`
 	Email        string `bson:"email" json:"email"`
 	PasswordHash string `bson:"passwordHash" json:"passwordHash"`
+
+	//ProfileImage Img_t `bson:"profile_image" json:"profile_image"`
 
 	Courses []primitive.ObjectID `bson:"courses_id" json:"courses_id"`
 }
@@ -54,47 +61,31 @@ func (u *User) AppendCourses(ids ...primitive.ObjectID) {
 }
 
 func (u *User) UpdateName(name string) {
-	updateName(u, name)
-}
-
-func (u *User) UpdateEmail(email string) {
-	updateEmail(u, email)
-}
-
-func (u *User) UpdatePassword(newPassword string) error {
-	return updatePassword(u, newPassword)
-}
-
-func (u *User) CheckPassword(password string) bool {
-	return checkPassword(u, password)
-}
-
-func (u *User) updateDate() {
-	u.UpdatedAt = time.Now()
-}
-
-func updateName(u *User, name string) {
 	u.Name = name
 	u.updateDate()
 }
 
-func updateEmail(u *User, email string) {
+func (u *User) UpdateEmail(email string) {
 	u.Email = email
 	u.updateDate()
 }
 
-func updatePassword(u *User, newPassword string) error {
+func (u *User) UpdatePassword(newPassword string) error {
 	newHash, err := bcrypt.GenerateFromPassword([]byte(newPassword), HashCost)
 	if err != nil {
 		return err
 	}
 
 	u.PasswordHash = string(newHash)
-
+	
 	u.updateDate()
 	return nil
 }
 
-func checkPassword(u *User, password string) bool {
+func (u *User) CheckPassword(password string) bool {
 	return (bcrypt.CompareHashAndPassword([]byte(u.PasswordHash), []byte(password)) == nil)
+}
+
+func (u *User) updateDate() {
+	u.UpdatedAt = time.Now()
 }

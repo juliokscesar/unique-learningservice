@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 
@@ -100,4 +101,64 @@ func UserFromPublicIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(u)
+}
+
+// Course HTTP handlers
+func CreateCourseHandler(w http.ResponseWriter, r *http.Request) {
+	setupHandler(w, r)
+	
+	err := r.ParseForm()
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	title := r.FormValue("title")
+	subtitle := r.FormValue("subtitle")
+	description := r.FormValue("description")
+	admId := r.FormValue("admId")
+
+	c, err := CreateAndInsertCourse(title, subtitle, description, admId)
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	err = AddUserCourse(admId, c.ID.Hex())
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(c)
+}
+
+func CourseFromIdHandler(w http.ResponseWriter, r *http.Request) {
+	setupHandler(w, r)
+
+	cid := mux.Vars(r)["id"]
+
+	c, err := GetCourseFromId(cid)
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(c)
+}
+
+func CoursesFromIdHandler(w http.ResponseWriter, r *http.Request) {
+	setupHandler(w, r)
+	
+	cids := mux.Vars(r)["ids"]
+	
+	coursesIds := strings.Split(cids, ",")
+
+	courses, err := GetManyCoursesFromId(coursesIds)
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(courses)
 }
