@@ -107,6 +107,7 @@ export class Login extends React.Component<{}, LoginState> {
               document.location.href = "/";
             }
           }}
+          submitDisabled
         />
 
         <br />

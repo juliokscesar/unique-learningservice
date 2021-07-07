@@ -2,8 +2,8 @@ import React from "react";
 import { cookies } from "../index";
 import { Redirect } from "react-router-dom";
 import { NavBar } from "../components/NavBar";
-import { API_BASE_URI } from "../constants";
 import { setTitle } from "../utils";
+import { getUserFromId } from "../apiCommunication";
 
 type UserHomeState = {
   isLoaded: boolean;
@@ -28,31 +28,22 @@ export class UserHome extends React.Component {
     if (userId === undefined) {
       document.location.href = "/login";
     } else {
-      fetch(API_BASE_URI + "user/" + userId)
-        .then((res) => res.json())
-        .then(
-          (result) => {
-            if (result["error"] !== undefined) {
-              this.setState({
-                isLoaded: true,
-                error: result["error"],
-              });
-            }
-            this.setState({
-              isLoaded: true,
-              loggedUser: {
-                name: result["name"],
-                id: userId,
-              },
-            });
-          },
-          (err) => {
-            this.setState({
-              isLoaded: true,
-              error: err,
-            });
-          }
-        );
+      getUserFromId(userId).then((result) => {
+        if (result["error"] !== undefined) {
+          this.setState({
+            isLoaded: true,
+            error: result["error"],
+          });
+        } else {
+          this.setState({
+            isLoaded: true,
+            loggedUser: {
+              name: result["name"],
+              id: userId,
+            },
+          });
+        }
+      });
     }
 
     setTitle("Home");

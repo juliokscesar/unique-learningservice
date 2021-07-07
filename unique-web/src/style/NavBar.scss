@@ -1,6 +1,8 @@
+@import "utils/variables";
+
 .navBar {
-  border-radius: 10px;
-  background-color: #37373d;
+  border-radius: $roundBorderRadius;
+  background-color: $contrastColor;
 
   .navBarUl {
     list-style-type: none;

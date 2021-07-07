@@ -8,6 +8,8 @@ import { Register } from "./pages/Register";
 import { cookies } from "./index";
 import { Profile } from "./pages/Profile";
 import { Logout } from "./pages/Logout";
+import { UserCourses } from "./pages/UserCourses";
+import { CreateCourse } from "./pages/CreateCourse";
 
 class AppRouter extends React.Component {
   render() {
@@ -40,6 +42,14 @@ class AppRouter extends React.Component {
               <Redirect
                 to={luid === undefined ? "/login" : "/user/profile/" + puid}
               />
+            </Route>
+
+            <Route path="/myCourses">
+              <UserCourses />
+            </Route>
+
+            <Route path="/createCourse">
+              <CreateCourse />
             </Route>
 
             <Route path="/secret">

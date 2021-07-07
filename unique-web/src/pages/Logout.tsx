@@ -4,9 +4,11 @@ import { cookies } from "../index";
 import { setTitle } from "../utils";
 
 export class Logout extends React.Component {
-  render() {
+  componentDidMount() {
     setTitle("Logout");
+  }
 
+  render() {
     return <Redirect to="/login" />;
   }
 

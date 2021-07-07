@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@200&display=swap");
-
-$backMainColor: #1a1a1d;
+@import "utils/variables";
 
 body {
   background-color: $backMainColor;
@@ -8,4 +7,8 @@ body {
 
   font-family: "Inter", sans-serif;
   text-align: center;
+}
+
+a {
+  color: rgb(47, 107, 218);
 }

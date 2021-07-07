@@ -107,6 +107,7 @@ export class Register extends React.Component<{}, RegisterState> {
 
             document.location.href = this.state.resultURL;
           }}
+          submitDisabled
         />
 
         <br />

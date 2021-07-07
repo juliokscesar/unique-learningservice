@@ -6,7 +6,4 @@ import "./style/index.scss";
 
 export const cookies = new Cookies();
 
-ReactDOM.render(
-  <AppRouter />,
-  document.querySelector("#root")
-);
+ReactDOM.render(<AppRouter />, document.querySelector("#root"));

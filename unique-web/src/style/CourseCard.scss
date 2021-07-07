@@ -1,0 +1,32 @@
+@import "utils/variables";
+
+.courseCard {
+  width: 20%;
+  height: 200px;
+  margin: 20px;
+  float: left;
+  cursor: pointer;
+  background-color: $contrastColor;
+  border-radius: $roundBorderRadius;
+  border-style: solid;
+  border-color: black;
+}
+
+.cardTitle {
+  margin-top: 6px;
+  margin-bottom: 2px;
+  font-size: 16pt;
+}
+
+.cardSubtitle {
+  font-size: 12pt;
+  color: #9b9baf;
+  margin-bottom: 3px;
+}
+
+.cardDescription {
+  margin-top: 5px;
+  margin-bottom: 3px;
+  text-align: center;
+  text-justify: inter-word;
+}

@@ -14,6 +14,7 @@ type UserFormProps = {
     minLength?: number;
     onChangeFn?: FnEventChange;
   }[];
+  submitDisabled: boolean;
   submitFn: FnSubmit;
 };
 
@@ -57,7 +58,7 @@ export class UserForm extends React.Component<UserFormProps> {
             id="submit"
             type="submit"
             value={this.props.title}
-            disabled={true}
+            disabled={this.props.submitDisabled}
           />
         </form>
       </div>

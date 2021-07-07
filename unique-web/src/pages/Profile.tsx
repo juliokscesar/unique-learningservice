@@ -1,7 +1,7 @@
 import React from "react";
 import { Redirect, RouteComponentProps } from "react-router-dom";
 import { NavBar } from "../components/NavBar";
-import { API_BASE_URI } from "../constants";
+import { getUserFromPublicId } from "../apiCommunication";
 import { setTitle } from "../utils";
 
 type ProfileState = {
@@ -31,32 +31,29 @@ export class Profile extends React.Component<ProfileProps, ProfileState> {
     setTitle("Profile");
 
     if (this.props.match.params.uid !== undefined) {
-      fetch(API_BASE_URI + "user/profile/" + this.props.match.params.uid)
-        .then((res) => res.json())
-        .then(
-          (result) => {
-            if (result["error"] !== undefined) {
-              this.setState({
-                isLoaded: true,
-                error: result["error"],
-              });
-            } else {
-              this.setState({
-                isLoaded: true,
-                userInfo: {
-                  name: result["name"],
-                },
-              });
-              setTitle(result["name"] + "'s Profile");
-            }
-          },
-          (err) => {
+      getUserFromPublicId(this.props.match.params.uid).then(
+        (result) => {
+          if (result["error"] !== undefined) {
             this.setState({
               isLoaded: true,
-              error: err,
+              error: result["error"],
+            });
+          } else {
+            this.setState({
+              isLoaded: true,
+              userInfo: {
+                name: result["name"],
+              },
             });
           }
-        );
+        },
+        (err) => {
+          this.setState({
+            isLoaded: true,
+            error: err,
+          });
+        }
+      );
     }
   }
 
