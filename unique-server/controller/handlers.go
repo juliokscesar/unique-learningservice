@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/juliokscesar/unique-learningservice/unique-server/models"
+	"github.com/juliokscesar/unique-learningservice/unique-server/uniqueErrors"
 	"github.com/juliokscesar/unique-learningservice/unique-server/utils"
 )
 
@@ -15,19 +16,64 @@ func errorHandler(w http.ResponseWriter, r *http.Request, err error) {
 	w.Write([]byte(`{"error": "` + err.Error() + `"}`))
 }
 
-func setupHandler(w http.ResponseWriter, r *http.Request) {
+func checkAuthentication(user, pass string) bool {
+	return (CheckApiAuthUser(user, pass) == nil)
+}
+
+func setupHandler(w http.ResponseWriter, r *http.Request) error {
+	user, pass, ok := r.BasicAuth()
+	if !ok || !checkAuthentication(user, pass) {
+		return uniqueErrors.ErrInvalidAPIAuthUser
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	return nil
+}
+
+func ProvideHandler(handler http.HandlerFunc) http.HandlerFunc {
+	return func (w http.ResponseWriter, r *http.Request) {
+		utils.LogRequest(r)
+
+		err := setupHandler(w, r)
+		if err != nil {
+			errorHandler(w, r, err)
+			return
+		}
+
+		handler(w, r)
+	}
+}
+
+// Api Auth User Handler (doesn't need authentication, so no setupHandler())
+func RegisterApiAuthUser(w http.ResponseWriter, r *http.Request) {
 	utils.LogRequest(r)
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 
 	w.Header().Set("Content-Type", "application/json")
+
+	err := r.ParseForm()
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
+	au, err := CreateApiAuthUser(username, password)
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(au)
 }
 
 // User HTTP handlers
 func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
-	setupHandler(w, r)
-
 	err := r.ParseForm()
 	if err != nil {
 		errorHandler(w, r, err)
@@ -54,8 +100,6 @@ func RegisterUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
-	setupHandler(w, r)
-
 	err := r.ParseForm()
 	if err != nil {
 		errorHandler(w, r, err)
@@ -75,8 +119,6 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserFromIdHandler(w http.ResponseWriter, r *http.Request) {
-	setupHandler(w, r)
-
 	uid := mux.Vars(r)["id"]
 
 	u, err := GetUserFromID(uid)
@@ -88,10 +130,7 @@ func UserFromIdHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(u)
 }
 
-
 func UserFromPublicIdHandler(w http.ResponseWriter, r *http.Request) {
-	setupHandler(w, r)
-
 	publicId := mux.Vars(r)["publicId"]
 
 	u, err := GetUserFromPublicId(publicId)
@@ -103,10 +142,41 @@ func UserFromPublicIdHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(u)
 }
 
+func ChangeUserField(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	u := new(models.User)
+
+	uid := mux.Vars(r)["id"]
+	switch field := mux.Vars(r)["field"]; field {
+	case "email":
+		u, err = ChangeUserEmail(uid, r.FormValue("newEmail"))
+
+	case "name":
+		u, err = ChangeUserName(uid, r.FormValue("newName"))
+	
+	case "password":
+		u, err = ChangeUserPass(uid, r.FormValue("oldPass"), r.FormValue("newPass"))
+
+	default:
+		errorHandler(w, r, uniqueErrors.ErrInvalidAPIUri)
+		return
+	}
+
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(u)
+}
+
 // Course HTTP handlers
 func CreateCourseHandler(w http.ResponseWriter, r *http.Request) {
-	setupHandler(w, r)
-	
 	err := r.ParseForm()
 	if err != nil {
 		errorHandler(w, r, err)
@@ -134,8 +204,6 @@ func CreateCourseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CourseFromIdHandler(w http.ResponseWriter, r *http.Request) {
-	setupHandler(w, r)
-
 	cid := mux.Vars(r)["id"]
 
 	c, err := GetCourseFromId(cid)
@@ -148,10 +216,8 @@ func CourseFromIdHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func CoursesFromIdHandler(w http.ResponseWriter, r *http.Request) {
-	setupHandler(w, r)
-	
 	cids := mux.Vars(r)["ids"]
-	
+
 	coursesIds := strings.Split(cids, ",")
 
 	courses, err := GetManyCoursesFromId(coursesIds)

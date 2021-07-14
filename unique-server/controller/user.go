@@ -49,6 +49,29 @@ func GetUserFromEmail(email string) (*models.User, error) {
 	return u, nil
 }
 
+
+func LoginUser(email, password string) (*models.User, error) {
+	u, err := GetUserFromEmail(email)
+	if err != nil {
+		return nil, uniqueErrors.ErrInvalidUserEmail
+	}
+	
+	if !u.CheckPassword(password) {
+		return nil, uniqueErrors.ErrInvalidPassword
+	}
+	
+	return u, nil
+}
+
+func RegisterUser(u *models.User) error {
+	_, err := GetUserFromEmail(u.Email)
+	if err == nil {
+		return uniqueErrors.ErrEmailRegistered
+	}
+	
+	return insertOneUser(u)
+}
+
 func AddUserCourse(uid string, cid string) error {
 	newU, err := GetUserFromID(uid)
 	if err != nil {
@@ -70,26 +93,67 @@ func AddUserCourse(uid string, cid string) error {
 	return nil
 }
 
-func LoginUser(email, password string) (*models.User, error) {
-	u, err := GetUserFromEmail(email)
+func ChangeUserEmail(uid string, newEmail string) (*models.User, error) {
+	err := utils.ValidateEmail(newEmail)
 	if err != nil {
-		return nil, uniqueErrors.ErrInvalidUser
+		return nil, err
 	}
 
-	if !u.CheckPassword(password) {
-		return nil, uniqueErrors.ErrInvalidPassword
+	u, err := GetUserFromID(uid)
+	if err != nil {
+		return nil, err
+	}
+
+	u.UpdateEmail(newEmail)
+
+	updateOp := bson.D{primitive.E{Key: "$set", Value: u}}
+	err = updateUserById(uid, updateOp)
+	if err != nil {
+		return nil, err
 	}
 
 	return u, nil
 }
 
-func RegisterUser(u *models.User) error {
-	_, err := GetUserFromEmail(u.Email)
-	if err == nil {
-		return uniqueErrors.ErrEmailRegistered
+func ChangeUserName(uid string, newName string) (*models.User, error) {
+	u, err := GetUserFromID(uid)
+	if err != nil {
+		return nil, err
 	}
 
-	return insertOneUser(u)
+	u.UpdateName(newName)
+
+	updateOp := bson.D{primitive.E{Key: "$set", Value: u}}
+	err = updateUserById(uid, updateOp)
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
+}
+
+func ChangeUserPass(uid string, oldPass string, newPass string) (*models.User, error) {
+	u, err := GetUserFromID(uid)
+	if err != nil {
+		return nil, err
+	}
+
+	if !u.CheckPassword(oldPass) {
+		return nil, uniqueErrors.ErrInvalidPassword
+	}
+
+	err = u.UpdatePassword(newPass)
+	if err != nil {
+		return nil, err
+	}
+
+	updateOp := bson.D{primitive.E{Key: "$set", Value: u}}
+	err = updateUserById(uid, updateOp)
+	if err != nil {
+		return nil, err
+	}
+
+	return u, nil
 }
 
 func insertOneUser(u *models.User) error {

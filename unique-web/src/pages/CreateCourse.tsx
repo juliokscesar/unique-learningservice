@@ -1,6 +1,6 @@
 import React from "react";
 import { NavBar } from "../components/NavBar";
-import { UserForm } from "../components/UserForm";
+import { BasicForm } from "../components/BasicForm";
 import { cookies } from "../index";
 import { createCourse } from "../apiCommunication";
 import { capitalizeFirstLetter } from "../utils";
@@ -81,7 +81,7 @@ export class CreateCourse extends React.Component<{}, CreateCourseState> {
       <div className="createCourseForm">
         <NavBar />
 
-        <UserForm
+        <BasicForm
           title="Create Course"
           inputs={inputs}
           submitFn={async () => {

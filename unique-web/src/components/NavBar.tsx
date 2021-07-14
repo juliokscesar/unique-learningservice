@@ -15,8 +15,11 @@ export class NavBar extends React.Component {
           <li>
             <a href="/myCourses">My Courses</a>
           </li>
-          <li id="navLogout">
+          <li id="navRighty">
             <a href="/logout">Logout</a>
+          </li>
+          <li id="navRighty">
+            <a href="/accountSettings">Settings</a>
           </li>
         </ul>
       </div>

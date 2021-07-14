@@ -1,8 +1,7 @@
 import React from "react";
-import { API_BASE_URI } from "../constants";
 import { Link } from "react-router-dom";
-import { UserForm } from "../components/UserForm";
-import QueryString from "qs";
+import { BasicForm } from "../components/BasicForm";
+import { loginUser } from "../apiCommunication";
 import { cookies } from "../index";
 import {
   capitalizeFirstLetter,
@@ -31,17 +30,7 @@ export class Login extends React.Component<{}, LoginState> {
   };
 
   loginSubmit = async () => {
-    let dataResult: string = await fetch(API_BASE_URI + "user/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: QueryString.stringify(this.state),
-    })
-      .then((res) => res.json())
-      .then((data) => JSON.stringify(data));
-
-    return JSON.parse(dataResult);
+    return await loginUser(this.state);
   };
 
   onSuccess = (userId: string, publicId: string) => {
@@ -93,7 +82,7 @@ export class Login extends React.Component<{}, LoginState> {
 
     return (
       <div className="loginForm">
-        <UserForm
+        <BasicForm
           title="Login"
           inputs={inputFields}
           submitFn={async () => {

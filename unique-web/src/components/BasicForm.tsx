@@ -18,7 +18,7 @@ type UserFormProps = {
   submitFn: FnSubmit;
 };
 
-export class UserForm extends React.Component<UserFormProps> {
+export class BasicForm extends React.Component<UserFormProps> {
   render() {
     const submitBtn = document.querySelector("#submit") as HTMLInputElement;
     const inputs = this.props.inputs.map((input) => {

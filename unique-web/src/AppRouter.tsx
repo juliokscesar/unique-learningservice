@@ -10,11 +10,16 @@ import { Profile } from "./pages/Profile";
 import { Logout } from "./pages/Logout";
 import { UserCourses } from "./pages/UserCourses";
 import { CreateCourse } from "./pages/CreateCourse";
+import { AccountSettings } from "./pages/AccountSettings";
+import { Course } from "./pages/Course";
+import { ChangePasswordForm } from "./pages/ChangePasswordForm";
 
 class AppRouter extends React.Component {
   render() {
     const luid = cookies.get("luid");
     const puid = cookies.get("puid");
+
+    const isUserLogged = puid && luid;
     return (
       <div className="App">
         <BrowserRouter>
@@ -26,11 +31,11 @@ class AppRouter extends React.Component {
             <Route path="/error" component={Error} />
 
             <Route path="/login">
-              {luid === undefined ? <Login /> : <Redirect to="/" />}
+              {isUserLogged ? <Redirect to="/" /> : <Login />}
             </Route>
 
             <Route path="/register">
-              {luid === undefined ? <Register /> : <Redirect to="/" />}
+              {isUserLogged ? <Redirect to="/" /> : <Register />}
             </Route>
 
             <Route path="/logout">
@@ -40,13 +45,22 @@ class AppRouter extends React.Component {
             <Route path="/user/profile/:uid" component={Profile} />
             <Route path="/user/profile">
               <Redirect
-                to={luid === undefined ? "/login" : "/user/profile/" + puid}
+                to={isUserLogged ? "/user/profile/" + puid : "/login"}
               />
+            </Route>
+
+            <Route exact path="/accountSettings">
+              {isUserLogged ? <AccountSettings /> : <Redirect to="/login" />}
+            </Route>
+            <Route path="/accountSettings/changePass">
+              {isUserLogged ? <ChangePasswordForm /> : <Redirect to="/login" />}
             </Route>
 
             <Route path="/myCourses">
               <UserCourses />
             </Route>
+
+            <Route path="/course/:cid" component={Course} />
 
             <Route path="/createCourse">
               <CreateCourse />

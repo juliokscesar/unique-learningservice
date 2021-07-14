@@ -1,10 +1,8 @@
 import React from "react";
-// import * as $ from "jquery";
 import { Link } from "react-router-dom";
 import { toggleElementById, validateEmail } from "../utils";
-import { UserForm } from "../components/UserForm";
-import { API_BASE_URI } from "../constants";
-import QueryString from "qs";
+import { BasicForm } from "../components/BasicForm";
+import { registerUser } from "../apiCommunication";
 
 type RegisterState = {
   name: string;
@@ -38,17 +36,7 @@ export class Register extends React.Component<{}, RegisterState> {
   };
 
   registerSubmit = async () => {
-    let dataResult: string = await fetch(API_BASE_URI + "user/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: QueryString.stringify(this.state),
-    })
-      .then((res) => res.json())
-      .then((data) => JSON.stringify(data));
-
-    return JSON.parse(dataResult);
+    return registerUser(this.state);
   };
 
   render() {
@@ -93,7 +81,7 @@ export class Register extends React.Component<{}, RegisterState> {
 
     return (
       <div className="registerForm">
-        <UserForm
+        <BasicForm
           title="Register"
           inputs={inputFields}
           submitFn={async () => {

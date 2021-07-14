@@ -26,6 +26,7 @@ var (
 )
 
 const (
+	API_AUTH_USERS_COLLECTION = "api_auth_users"
 	USERS_COLLECTION       = "users"
 	COURSES_COLLECTION     = "courses"
 	MATERIALS_COLLECTION   = "materials"
@@ -51,6 +52,7 @@ func ControllerInit() error {
 	}
 	log.Println("Successfully pinged client (func ControllerInit)")
 
+	collections[API_AUTH_USERS_COLLECTION] = mongoClient.Database(Db).Collection("api_auth_users")
 	collections[USERS_COLLECTION] = mongoClient.Database(Db).Collection("users")
 	collections[COURSES_COLLECTION] = mongoClient.Database(Db).Collection("courses")
 	collections[MATERIALS_COLLECTION] = mongoClient.Database(Db).Collection("materials")
@@ -132,7 +134,7 @@ func updateOne(collection string, filter interface{}, updateOp interface{}) erro
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -143,7 +145,7 @@ func updateById(collection string, id string, updateOp interface{}) error {
 	}
 
 	filter := bson.D{primitive.E{Key: "_id", Value: convertedId}}
-	
+
 	return updateOne(collection, filter, updateOp)
 }
 
