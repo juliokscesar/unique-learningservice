@@ -1,11 +1,71 @@
 package controller
 
 import (
+	"encoding/json"
+	"net/http"
+	"strings"
+
+	"github.com/gorilla/mux"
 	"github.com/juliokscesar/unique-learningservice/unique-server/models"
 	"github.com/juliokscesar/unique-learningservice/unique-server/utils"
 )
 
-func CreateAndInsertCourse(title, subtitle, desc, admId string) (*models.Course, error) {
+type CourseController struct {}
+
+func (cc *CourseController) CreateCourse(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	title := r.FormValue("title")
+	subtitle := r.FormValue("subtitle")
+	description := r.FormValue("description")
+	admId := r.FormValue("admId")
+
+	c, err := createAndInsertCourse(title, subtitle, description, admId)
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	err = addUserCourse(admId, c.ID.Hex())
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(c)
+}
+
+func (cc *CourseController) CourseFromId(w http.ResponseWriter, r *http.Request) {
+	cid := mux.Vars(r)["id"]
+
+	c, err := getCourseFromId(cid)
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(c)
+}
+
+func (cc *CourseController) CoursesFromIds(w http.ResponseWriter, r *http.Request) {
+	cids := mux.Vars(r)["ids"]
+
+	coursesIds := strings.Split(cids, ",")
+
+	courses, err := getManyCoursesFromId(coursesIds)
+	if err != nil {
+		errorHandler(w, r, err)
+		return
+	}
+
+	json.NewEncoder(w).Encode(courses)
+}
+
+func createAndInsertCourse(title, subtitle, desc, admId string) (*models.Course, error) {
 	c := models.NewCourse(title, subtitle, desc)
 
 	convertedId, err := utils.ValidateConvertId(admId)
@@ -15,7 +75,7 @@ func CreateAndInsertCourse(title, subtitle, desc, admId string) (*models.Course,
 
 	c.AppendTeachers(convertedId)
 
-	err = InsertOneCourse(c)
+	err = insertOneCourse(c)
 	if err != nil {
 		return nil, err
 	}
@@ -23,7 +83,7 @@ func CreateAndInsertCourse(title, subtitle, desc, admId string) (*models.Course,
 	return c, nil
 }
 
-func GetCourseFromId(id string) (*models.Course, error) {
+func getCourseFromId(id string) (*models.Course, error) {
 	c := new(models.Course)
 	err := getById(COURSES_COLLECTION, id, c)
 	if err != nil {
@@ -33,7 +93,7 @@ func GetCourseFromId(id string) (*models.Course, error) {
 	return c, nil
 }
 
-func GetManyCoursesFromId(ids []string) ([]*models.Course, error) {
+func getManyCoursesFromId(ids []string) ([]*models.Course, error) {
 	c := make([]*models.Course, len(ids))
 	err := getManyById(COURSES_COLLECTION, ids, &c)
 	if err != nil {
@@ -43,10 +103,10 @@ func GetManyCoursesFromId(ids []string) ([]*models.Course, error) {
 	return c, nil
 }
 
-func InsertOneCourse(c *models.Course) error {
+func insertOneCourse(c *models.Course) error {
 	return insertOne(COURSES_COLLECTION, c)
 }
 
-func DeleteOneCourse(id string) error {
-	return deleteById(COURSES_COLLECTION, id)
-}
+// func deleteOneCourse(id string) error {
+// 	return deleteById(COURSES_COLLECTION, id)
+// }

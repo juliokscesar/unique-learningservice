@@ -11,34 +11,47 @@ import (
 )
 
 func configHandlers(r *mux.Router) {
-	r.HandleFunc("/api/authuser/register", controller.RegisterApiAuthUser).Methods(http.MethodPost, http.MethodOptions)
+	// API Auth User HTTP Handlers
+	auc := new(controller.ApiAuthUserController)
+
+	r.HandleFunc("/api/authuser/register", 
+		auc.RegisterApiAuthUser,
+	).Methods(http.MethodPost, http.MethodOptions)
+
+
+	// User HTTP Handlers
+	uc := new(controller.UserController)
 
 	r.HandleFunc("/api/user/register", 
-		controller.ProvideHandler(controller.RegisterUserHandler),
+		controller.ProvideHandler(uc.RegisterUser),
 	).Methods(http.MethodPost, http.MethodOptions)
 
 	r.HandleFunc("/api/user/login", 
-		controller.ProvideHandler(controller.LoginUserHandler),
+		controller.ProvideHandler(uc.LoginUser),
 	).Methods(http.MethodPost, http.MethodOptions)
 
 	r.HandleFunc("/api/user/{id}", 
-		controller.ProvideHandler(controller.UserFromIdHandler),
+		controller.ProvideHandler(uc.UserFromId),
 	).Methods(http.MethodGet)
 	r.HandleFunc("/api/user/profile/{publicId}", 
-		controller.ProvideHandler(controller.UserFromPublicIdHandler),
+		controller.ProvideHandler(uc.UserFromPublicId),
 	).Methods(http.MethodGet)
 	r.HandleFunc("/api/user/{id}/settings/change/{field}", 
-		controller.ProvideHandler(controller.ChangeUserField),
+		controller.ProvideHandler(uc.ChangeUserField),
 	).Methods(http.MethodPost, http.MethodOptions)
 
+
+	// Course HTTP Handlers
+	cc := new(controller.CourseController)
+
 	r.HandleFunc("/api/course/{id}", 
-		controller.ProvideHandler(controller.CourseFromIdHandler),
+		controller.ProvideHandler(cc.CourseFromId),
 	).Methods(http.MethodGet)
 	r.HandleFunc("/api/courses/{ids}", 
-		controller.ProvideHandler(controller.CoursesFromIdHandler),
+		controller.ProvideHandler(cc.CoursesFromIds),
 	).Methods(http.MethodGet)
 	r.HandleFunc("/api/course/create", 
-		controller.ProvideHandler(controller.CreateCourseHandler),
+		controller.ProvideHandler(cc.CreateCourse),
 	).Methods(http.MethodPost, http.MethodOptions)
 }
 
@@ -53,6 +66,8 @@ func main() {
 
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
+		AllowedHeaders: []string{"X-Requested-With", "Content-Type", "Authorization"},
+		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
 	})
 
 	handler := c.Handler(router)

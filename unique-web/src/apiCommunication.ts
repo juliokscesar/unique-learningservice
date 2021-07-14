@@ -15,8 +15,8 @@ const postFormRequestAPI = async (urlReq: string, formData: any) => {
   const data = await fetch(API_BASE_URI + urlReq, {
     method: "POST",
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
       Authorization: "Basic " + encode(API_AUTH_USER + ":" + API_AUTH_PASS),
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: QueryString.stringify(formData),
   })
