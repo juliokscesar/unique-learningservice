@@ -175,31 +175,12 @@ func errorHandler(w http.ResponseWriter, r *http.Request, err error) {
 	w.Write([]byte(`{"error": "` + err.Error() + `"}`))
 }
 
-func checkAuthentication(user, pass string) bool {
-	return (CheckApiAuthUser(user, pass) == nil)
-}
-
-func setupHandler(w http.ResponseWriter, r *http.Request) error {
-	user, pass, ok := r.BasicAuth()
-	if !ok || !checkAuthentication(user, pass) {
-		return uniqueErrors.ErrInvalidAPIAuthUser
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-
-	return nil
-}
-
 func ProvideHandler(handler http.HandlerFunc) http.HandlerFunc {
 	return func (w http.ResponseWriter, r *http.Request) {
 		utils.LogRequest(r)
 
-		err := setupHandler(w, r)
-		if err != nil {
-			errorHandler(w, r, err)
-			return
-		}
-
+		w.Header().Set("Content-Type", "application/json")
+		
 		handler(w, r)
 	}
 }

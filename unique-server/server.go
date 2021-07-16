@@ -11,46 +11,37 @@ import (
 )
 
 func configHandlers(r *mux.Router) {
-	// API Auth User HTTP Handlers
-	auc := new(controller.ApiAuthUserController)
-
-	r.HandleFunc("/api/authuser/register", 
-		auc.RegisterApiAuthUser,
-	).Methods(http.MethodPost, http.MethodOptions)
-
-
 	// User HTTP Handlers
 	uc := new(controller.UserController)
 
-	r.HandleFunc("/api/user/register", 
+	r.HandleFunc("/api/user/register",
 		controller.ProvideHandler(uc.RegisterUser),
 	).Methods(http.MethodPost, http.MethodOptions)
 
-	r.HandleFunc("/api/user/login", 
+	r.HandleFunc("/api/user/login",
 		controller.ProvideHandler(uc.LoginUser),
 	).Methods(http.MethodPost, http.MethodOptions)
 
-	r.HandleFunc("/api/user/{id}", 
+	r.HandleFunc("/api/user/{id}",
 		controller.ProvideHandler(uc.UserFromId),
 	).Methods(http.MethodGet)
-	r.HandleFunc("/api/user/profile/{publicId}", 
+	r.HandleFunc("/api/user/profile/{publicId}",
 		controller.ProvideHandler(uc.UserFromPublicId),
 	).Methods(http.MethodGet)
-	r.HandleFunc("/api/user/{id}/settings/change/{field}", 
+	r.HandleFunc("/api/user/{id}/settings/change/{field}",
 		controller.ProvideHandler(uc.ChangeUserField),
 	).Methods(http.MethodPost, http.MethodOptions)
-
 
 	// Course HTTP Handlers
 	cc := new(controller.CourseController)
 
-	r.HandleFunc("/api/course/{id}", 
+	r.HandleFunc("/api/course/{id}",
 		controller.ProvideHandler(cc.CourseFromId),
 	).Methods(http.MethodGet)
-	r.HandleFunc("/api/courses/{ids}", 
+	r.HandleFunc("/api/courses/{ids}",
 		controller.ProvideHandler(cc.CoursesFromIds),
 	).Methods(http.MethodGet)
-	r.HandleFunc("/api/course/create", 
+	r.HandleFunc("/api/course/create",
 		controller.ProvideHandler(cc.CreateCourse),
 	).Methods(http.MethodPost, http.MethodOptions)
 }

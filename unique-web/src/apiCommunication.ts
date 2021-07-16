@@ -1,21 +1,14 @@
 import QueryString from "qs";
-import { API_BASE_URI, API_AUTH_USER, API_AUTH_PASS } from "./constants";
-import { encode } from "base-64";
+import { API_BASE_URI } from "./constants";
 
 const getRequestAPI = (urlReq: string) => {
-  return fetch(API_BASE_URI + urlReq, {
-    method: "GET",
-    headers: {
-      Authorization: "Basic " + encode(API_AUTH_USER + ":" + API_AUTH_PASS),
-    },
-  }).then((res) => res.json());
+  return fetch(API_BASE_URI + urlReq).then((res) => res.json());
 };
 
 const postFormRequestAPI = async (urlReq: string, formData: any) => {
   const data = await fetch(API_BASE_URI + urlReq, {
     method: "POST",
     headers: {
-      Authorization: "Basic " + encode(API_AUTH_USER + ":" + API_AUTH_PASS),
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: QueryString.stringify(formData),

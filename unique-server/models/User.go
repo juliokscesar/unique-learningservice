@@ -9,7 +9,7 @@ import (
 	"github.com/juliokscesar/unique-learningservice/unique-server/utils"
 )
 
-const HashCost = 14
+const HashCost = 10
 
 // type Img_t struct {
 // 	ImgType string `bson:"img_type" json:"img_type"`
