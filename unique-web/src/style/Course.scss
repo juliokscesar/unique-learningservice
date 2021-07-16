@@ -1,0 +1,46 @@
+@import "utils/variables";
+
+.separator {
+  width: 75%;
+}
+
+.courseSidebar {
+  overflow-y: auto;
+  display: block;
+  background-color: $contrastColor;
+  border-radius: $roundBorderRadius;
+
+  margin: 10px;
+  margin-left: 0px;
+  width: 300px;
+
+  #courseTitle {
+    font-size: 24pt;
+    margin-bottom: 7px;
+  }
+
+  #courseSubtitle {
+    font-size: 18px;
+  }
+
+  ul {
+    list-style-type: none;
+  }
+
+  li {
+    margin-right: 45px;
+    p {
+      font-size: 18px;
+      color: white;
+      display: block;
+      padding: 14px;
+      text-align: center;
+      text-decoration: none;
+    }
+    p:hover {
+      border-radius: 10px;
+      background-color: #2b2b30;
+      cursor: pointer;
+    }
+  }
+}

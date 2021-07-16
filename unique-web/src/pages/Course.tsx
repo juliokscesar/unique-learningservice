@@ -3,6 +3,8 @@ import { Redirect, RouteComponentProps } from "react-router-dom";
 import { getCourseFromId } from "../apiCommunication";
 import { NavBar } from "../components/NavBar";
 import { setTitle } from "../utils";
+import "../style/Course.scss";
+import { cookies } from "..";
 
 interface CourseProps
   extends RouteComponentProps<{ cid: string | undefined }> {}
@@ -20,7 +22,7 @@ type CourseInfo = {
 type CourseState = {
   isLoaded: boolean;
   error: string | null;
-
+  user: string | undefined;
   courseInfo: CourseInfo | null;
 };
 
@@ -28,6 +30,7 @@ export class Course extends React.Component<CourseProps, CourseState> {
   state: CourseState = {
     isLoaded: false,
     error: null,
+    user: undefined,
     courseInfo: null,
   };
 
@@ -59,6 +62,15 @@ export class Course extends React.Component<CourseProps, CourseState> {
               },
             });
             setTitle(result["title"]);
+
+            const uid = cookies.get("luid");
+            if (uid !== undefined) {
+              if (result["teachers_id"].indexOf(uid) >= 0) {
+                this.setState({ user: "teacher" });
+              } else if (result["students_id"].indexOf(uid) >= 0) {
+                this.setState({ user: "student" });
+              }
+            }
           }
         },
         (err) => {
@@ -79,13 +91,44 @@ export class Course extends React.Component<CourseProps, CourseState> {
     } else if (error !== null) {
       return <Redirect to={"/error?err" + error} />;
     } else if (courseInfo !== null) {
-      console.log(courseInfo);
       return (
         <div className="coursePage">
           <NavBar />
 
-          <h1>{courseInfo.title}</h1>
-          <h3>{courseInfo.subtitle}</h3>
+          <section>
+            <aside className="courseSidebar">
+              <h1 id="courseTitle">{courseInfo.title}</h1>
+              <p id="courseSubtitle">{courseInfo.subtitle}</p>
+
+              <hr className="separator" />
+
+              <ul>
+                <li>
+                  <p>Home</p>
+                </li>
+                <li>
+                  <p>Members</p>
+                </li>
+                <li>
+                  <p>Materials</p>
+                </li>
+                <li>
+                  <p>Assignments</p>
+                </li>
+                {this.state.user === "teacher" ? (
+                  <div id="sidebarTeacherOpts">
+                    <hr className="separator" />
+                    <li>
+                      <p>Course Settings</p>
+                    </li>
+                    <li>
+                      <p>Manage Members</p>
+                    </li>
+                  </div>
+                ) : null}
+              </ul>
+            </aside>
+          </section>
         </div>
       );
     } else {
